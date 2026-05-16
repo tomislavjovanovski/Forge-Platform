@@ -12,5 +12,4 @@ export function getTestServer() {
     }
     return server;
 }
-export { setupServer };
 //# sourceMappingURL=index.js.map

@@ -55,7 +55,7 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>,
     VariantProps<typeof inputVariants> {
   /**
    * Icon to display before input

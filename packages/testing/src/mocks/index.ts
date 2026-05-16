@@ -1,13 +1,13 @@
-import { http, HttpHandler } from 'msw';
+import type { RequestHandler } from 'msw';
 import type { SetupServerApi } from 'msw/node';
 
 // Mock server setup utility
 let server: SetupServerApi | null = null;
 
-export function setupTestServer(handlers: HttpHandler[] = []): SetupServerApi {
+export function setupTestServer(handlers: RequestHandler[] = []): SetupServerApi {
   // Use dynamic import to avoid server-side module loading issues
   const { setupServer } = require('msw/node') as typeof import('msw/node');
-  server = setupServer(...handlers);
+  server = setupServer(...handlers) as SetupServerApi;
   return server;
 }
 
@@ -17,5 +17,3 @@ export function getTestServer(): SetupServerApi {
   }
   return server;
 }
-
-export { setupServer };
