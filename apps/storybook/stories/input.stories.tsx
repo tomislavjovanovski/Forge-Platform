@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Input } from '../src/components';
+import { Input } from '@forge/ui';
 
 /**
  * Input component

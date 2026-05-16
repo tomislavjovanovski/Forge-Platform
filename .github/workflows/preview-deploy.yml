@@ -1,0 +1,43 @@
+name: Preview Deployment QA
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+env:
+  PNPM_HOME: /home/runner/.local/share/pnpm
+  PATH: /home/runner/.local/share/pnpm:$PATH
+
+jobs:
+  preview-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - app: admin-dashboard
+            port: 4173
+          - app: analytics-dashboard
+            port: 4174
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build --filter=@forge/${{ matrix.app }}
+      - run: |
+          pnpm --dir ./apps/${{ matrix.app }} exec vite preview --host 127.0.0.1 --port ${{ matrix.port }} --strictPort &
+          echo "Waiting for preview server on port ${{ matrix.port }}"
+          sleep 8
+          curl --fail http://127.0.0.1:${{ matrix.port }}
+      - name: Run smoke E2E against preview
+        run: |
+          PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} pnpm exec playwright test apps/${{ matrix.app }}/tests --project=chromium --reporter=html
+      - uses: actions/upload-artifact@v3
+        with:
+          name: preview-artifact-${{ matrix.app }}
+          path: playwright-report

@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: QA + Build Pipeline
 
 on:
   push:
@@ -26,7 +26,8 @@ jobs:
       - run: pnpm lint
       - run: pnpm type-check
 
-  test:
+  unit-tests:
+    needs: [lint]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,7 +46,7 @@ jobs:
           fail_ci_if_error: true
 
   build:
-    needs: [lint, test]
+    needs: [unit-tests]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -60,13 +61,58 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build --filter=${{ matrix.app }}
+      - run: pnpm build --filter=@forge/${{ matrix.app }}
       - uses: actions/upload-artifact@v3
         with:
           name: dist-${{ matrix.app }}
           path: apps/${{ matrix.app }}/dist
 
   e2e:
+    needs: [build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - app: admin-dashboard
+            port: 4173
+          - app: analytics-dashboard
+            port: 4174
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: npx playwright install --with-deps
+      - run: |
+          PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
+          pnpm exec playwright test apps/${{ matrix.app }}/tests --project=${{ matrix.browser }} --reporter=html
+      - uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report-${{ matrix.app }}-${{ matrix.browser }}
+          path: playwright-report
+
+  accessibility:
+    needs: [unit-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:accessibility
+
+  lighthouse:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
@@ -79,20 +125,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build:all
-      - run: npx playwright install --with-deps
-      - run: pnpm test:e2e
-
-  accessibility:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9.0.0
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test -- --include='**/*.a11y.test.ts'
+      - run: pnpm build --filter=@forge/admin-dashboard
+      - run: |
+          pnpm --dir ./apps/admin-dashboard exec vite preview --host 127.0.0.1 --port 4173 --strictPort &
+          sleep 8
+          pnpm exec lhci autorun --config .lighthouserc.json

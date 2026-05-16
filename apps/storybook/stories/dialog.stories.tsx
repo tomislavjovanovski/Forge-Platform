@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
-import { Dialog } from '../src/components';
-import { Button } from '../src/components';
+import { Dialog, Button } from '@forge/ui';
 
 /**
  * Dialog component

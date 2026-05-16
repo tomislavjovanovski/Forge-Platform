@@ -1,0 +1,30 @@
+name: Release
+
+'on':
+  push:
+    tags: ['v*']
+
+env:
+  PNPM_HOME: /home/runner/.local/share/pnpm
+  PATH: /home/runner/.local/share/pnpm:$PATH
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9.0.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm exec semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

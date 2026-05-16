@@ -1,0 +1,19 @@
+module.exports = {
+  branches: ['main', 'develop'],
+  repositoryUrl: process.env.GITHUB_REPOSITORY
+    ? `https://github.com/${process.env.GITHUB_REPOSITORY}`
+    : undefined,
+  plugins: [
+    '@semantic-release/commit-analyzer',
+    '@semantic-release/release-notes-generator',
+    '@semantic-release/changelog',
+    '@semantic-release/github',
+    [
+      '@semantic-release/git',
+      {
+        assets: ['CHANGELOG.md', 'package.json', 'packages/*/package.json'],
+        message: 'chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}',
+      },
+    ],
+  ],
+};

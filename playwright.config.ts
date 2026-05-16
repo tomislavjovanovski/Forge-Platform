@@ -1,17 +1,41 @@
 import { defineConfig, devices } from '@playwright/test';
 
-export default defineConfig({
-  testDir: './e2e',
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
-  reporter: 'html',
-  use: {
-    baseURL: 'http://localhost:3000',
-    trace: 'on-first-retry',
-  },
+const isCI = Boolean(process.env.CI);
+const appName = process.env.PW_APP ?? 'admin-dashboard';
+const portMap: Record<string, number> = {
+  'admin-dashboard': 4173,
+  'analytics-dashboard': 4174,
+  'public-portal': 4175,
+};
+const port = Number(process.env.PW_PORT ?? portMap[appName] ?? 4173);
+const baseURL = `http://127.0.0.1:${port}`;
 
+export default defineConfig({
+  testDir: './',
+  testMatch: ['**/tests/**/*.spec.ts'],
+  timeout: 120000,
+  expect: {
+    timeout: 10000,
+  },
+  fullyParallel: true,
+  forbidOnly: isCI,
+  retries: isCI ? 2 : 0,
+  workers: isCI ? 3 : undefined,
+  reporter: [
+    ['list'],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['json', { outputFile: 'playwright-report/results.json' }],
+  ],
+  use: {
+    actionTimeout: 10000,
+    navigationTimeout: 30000,
+    baseURL,
+    trace: 'retain-on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    viewport: { width: 1600, height: 900 },
+    ignoreHTTPSErrors: true,
+  },
   projects: [
     {
       name: 'chromium',
@@ -26,10 +50,10 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    command: `pnpm --dir ./apps/${appName} exec vite preview --host 127.0.0.1 --port ${port} --strictPort`,
+    url: baseURL,
+    reuseExistingServer: !isCI,
+    timeout: 120000,
   },
 });

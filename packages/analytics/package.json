@@ -18,6 +18,10 @@
     "./events": {
       "types": "./dist/events/index.d.ts",
       "import": "./dist/events/index.js"
+    },
+    "./posthog": {
+      "types": "./dist/posthog.d.ts",
+      "import": "./dist/posthog.js"
     }
   },
   "scripts": {

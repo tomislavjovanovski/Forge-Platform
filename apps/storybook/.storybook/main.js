@@ -1,5 +1,10 @@
+const path = require('path');
+
 module.exports = {
-  stories: ['../../../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: [
+    '../stories/**/*.stories.@(js|jsx|ts|tsx)',
+    '../../../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)',
+  ],
 
   addons: [
     '@storybook/addon-essentials',
@@ -15,5 +20,21 @@ module.exports = {
 
   docs: {
     autodocs: 'tag',
+  },
+
+  async viteFinal(config) {
+    return {
+      ...config,
+      resolve: {
+        ...config.resolve,
+        alias: {
+          ...(config.resolve?.alias || {}),
+          '@forge/ui': path.resolve(__dirname, '../../../packages/ui/src'),
+          '@forge/testing': path.resolve(__dirname, '../../../packages/testing/src'),
+          '@forge/monitoring': path.resolve(__dirname, '../../../packages/monitoring/src'),
+          '@forge/analytics': path.resolve(__dirname, '../../../packages/analytics/src'),
+        },
+      },
+    };
   },
 };

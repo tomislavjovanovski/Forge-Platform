@@ -22,6 +22,10 @@
     "./accessibility": {
       "types": "./dist/accessibility/index.d.ts",
       "import": "./dist/accessibility/index.js"
+    },
+    "./errorBoundary": {
+      "types": "./dist/errorBoundary.d.ts",
+      "import": "./dist/errorBoundary.js"
     }
   },
   "scripts": {
