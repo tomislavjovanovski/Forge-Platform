@@ -1,0 +1,41 @@
+{
+  "name": "@forge/analytics-dashboard",
+  "version": "1.0.0",
+  "description": "Analytics dashboard application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "@reduxjs/toolkit": "^1.9.0",
+    "react-redux": "^8.1.0",
+    "@forge/ui": "workspace:*",
+    "@forge/analytics": "workspace:*",
+    "@forge/monitoring": "workspace:*",
+    "zustand": "^4.4.0",
+    "recharts": "^2.10.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "@testing-library/react": "^14.1.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "vitest": "^1.0.0",
+    "@playwright/test": "^1.40.0"
+  }
+}

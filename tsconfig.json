@@ -1,0 +1,65 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+
+    /* Modules */
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
+    /* Path Aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@forge/ui": ["packages/ui/src/index.ts"],
+      "@forge/ui/*": ["packages/ui/src/*"],
+      "@forge/testing": ["packages/testing/src/index.ts"],
+      "@forge/testing/*": ["packages/testing/src/*"],
+      "@forge/auth": ["packages/auth/src/index.ts"],
+      "@forge/auth/*": ["packages/auth/src/*"],
+      "@forge/analytics": ["packages/analytics/src/index.ts"],
+      "@forge/analytics/*": ["packages/analytics/src/*"],
+      "@forge/monitoring": ["packages/monitoring/src/index.ts"],
+      "@forge/monitoring/*": ["packages/monitoring/src/*"],
+      "@forge/eslint-config": ["packages/eslint-config/src/index.ts"],
+      "@apps/admin/*": ["apps/admin-dashboard/src/*"],
+      "@apps/analytics/*": ["apps/analytics-dashboard/src/*"],
+      "@apps/portal/*": ["apps/public-portal/src/*"],
+      "@/*": ["./*"]
+    },
+
+    /* JSX */
+    "jsx": "react-jsx",
+
+    /* Emit */
+    "incremental": true,
+    "tsBuildInfoFile": ".turbo/tsbuildinfo.json"
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", "dist", "build", ".turbo"]
+}

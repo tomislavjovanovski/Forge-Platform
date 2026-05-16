@@ -1,0 +1,16 @@
+{
+  "name": "@forge/ts-config",
+  "version": "1.0.0",
+  "description": "Shared TypeScript configuration for the monorepo",
+  "private": false,
+  "exports": {
+    "./base": "./base.json",
+    "./react": "./react.json",
+    "./app": "./app.json"
+  },
+  "files": [
+    "base.json",
+    "react.json",
+    "app.json"
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "name": "@forge/ui",
+  "version": "1.0.0",
+  "description": "Shared Radix UI component library with Tailwind CSS",
+  "private": false,
+  "type": "module",
+
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.js"
+    },
+    "./styles": "./src/styles.css"
+  },
+
+  "scripts": {
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "test:coverage": "vitest --coverage"
+  },
+
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.2.0"
+  },
+
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "@types/react-dom": "19.0.0",
+    "@vitejs/plugin-react": "^4.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^1.0.0",
+    "@testing-library/react": "^14.1.0",
+    "vitest": "^1.0.0"
+  }
+}

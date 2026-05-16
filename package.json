@@ -1,0 +1,61 @@
+{
+  "name": "forge-platform",
+  "version": "1.0.0",
+  "description": "Enterprise-grade SaaS frontend platform monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo build --filter=!storybook",
+    "build:all": "turbo build",
+    "build:storybook": "turbo build --filter=storybook",
+    "dev": "turbo dev",
+    "dev:admin": "turbo dev --filter=admin-dashboard",
+    "dev:analytics": "turbo dev --filter=analytics-dashboard",
+    "dev:portal": "turbo dev --filter=public-portal",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint -- --fix",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "test:watch": "turbo test -- --watch",
+    "test:coverage": "turbo test -- --coverage",
+    "test:e2e": "turbo test:e2e",
+    "clean": "turbo clean && rm -rf node_modules",
+    "clean:dist": "turbo clean",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md}\"",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "publish": "changeset publish",
+    "deps:check": "turbo deps-check",
+    "deps:visualize": "turbo graph",
+    "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.0",
+    "@types/node": "^20.10.0",
+    "@types/react": "18",
+    "@types/react-dom": "18",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "autoprefixer": "^10.5.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-react": "^7.33.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "postcss": "^8.5.14",
+    "prettier": "^3.1.0",
+    "tailwindcss": "3",
+    "turbo": "^1.10.16",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "react": "18",
+    "react-dom": "18"
+  }
+}

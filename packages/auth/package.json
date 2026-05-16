@@ -1,0 +1,40 @@
+{
+  "name": "@forge/auth",
+  "version": "1.0.0",
+  "description": "Authentication and authorization service layer",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
+    "./providers": {
+      "types": "./dist/providers/index.d.ts",
+      "import": "./dist/providers/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "react": "19.0.0",
+    "zustand": "^4.4.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.0.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.0"
+  }
+}

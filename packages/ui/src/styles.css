@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+@layer components {
+  .prose-heading {
+    @apply font-semibold text-slate-900;
+  }
+
+  .prose-text {
+    @apply text-slate-600;
+  }
+}
