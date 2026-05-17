@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "storybook dev -p 6006",
     "build": "storybook build",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint stories src --ext .ts,.tsx",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {

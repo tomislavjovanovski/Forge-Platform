@@ -60,6 +60,6 @@
     "incremental": true,
     "tsBuildInfoFile": ".turbo/tsbuildinfo.json"
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"],
   "exclude": ["node_modules", "dist", "build", ".turbo"]
 }

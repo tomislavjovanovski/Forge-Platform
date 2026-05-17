@@ -16,7 +16,11 @@
     "ecmaFeatures": {
       "jsx": true
     },
-    "project": "./tsconfig.json"
+    "project": [
+      "./tsconfig.json",
+      "./packages/*/tsconfig.json",
+      "./apps/*/tsconfig.json"
+    ]
   },
   "plugins": [
     "@typescript-eslint",
