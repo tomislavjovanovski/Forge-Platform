@@ -2,6 +2,7 @@ const path = require('path');
 
 module.exports = {
   stories: [
+    '../stories/**/*.mdx',
     '../stories/**/*.stories.@(js|jsx|ts|tsx)',
     '../../../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)',
   ],
@@ -20,6 +21,12 @@ module.exports = {
 
   docs: {
     autodocs: 'tag',
+  },
+
+  options: {
+    storySort: {
+      order: ['Engineering', 'Foundations', 'Components'],
+    },
   },
 
   async viteFinal(config) {

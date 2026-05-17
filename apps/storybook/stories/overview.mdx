@@ -1,0 +1,39 @@
+import { Meta } from '@storybook/blocks';
+import { Card, CardGrid, DocsPage, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Overview" />
+
+<DocsPage
+  title="Frontend Engineering Platform"
+  subtitle="Storybook in forge-platform now acts as the shared documentation surface for component usage, design foundations, testing expectations, and architectural decision-making."
+>
+
+## What lives here
+
+<CardGrid>
+  <Card title="Design foundations">
+    Color semantics, spacing, typography, motion, responsive breakpoints, and dark mode guidance are documented as system contracts.
+  </Card>
+  <Card title="Engineering standards">
+    Accessibility, testing, and architecture guidance sits next to the component library so implementation details and standards evolve together.
+  </Card>
+  <Card title="Usage guidance">
+    Components are still demonstrable in Canvas, but docs pages now clarify intent, adoption boundaries, and the trade-offs behind patterns.
+  </Card>
+  <Card title="System visibility">
+    The package dependency graph and major platform boundaries are visible here so contributors can understand where code belongs before they add it.
+  </Card>
+</CardGrid>
+
+<Callout>
+  Use the sidebar as a handbook. The <strong>Engineering</strong> section explains operating principles, the <strong>Foundations</strong> section documents reusable design contracts, and <strong>Components</strong> remains the implementation gallery.
+</Callout>
+
+## Recommended reading order
+
+1. Start with Architecture Decisions to understand package boundaries and tool choices.
+2. Review Design Tokens, Responsive Behavior, Motion, and Dark Mode to align new UI work with system primitives.
+3. Read Accessibility and Testing before adding or changing component behavior.
+4. Use Component Usage Guidelines and the live component stories during implementation.
+
+</DocsPage>

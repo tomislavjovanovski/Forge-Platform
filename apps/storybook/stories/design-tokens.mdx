@@ -1,0 +1,108 @@
+import { Meta } from '@storybook/blocks';
+import { semanticColors, interactiveColors, darkModeColors } from '../../../packages/ui/src/tokens/colors';
+import { spacing, breakpoints, borderRadius, shadows } from '../../../packages/ui/src/tokens/spacing';
+import { typography } from '../../../packages/ui/src/tokens/typography';
+import { motionTokens } from '../../../packages/ui/src/tokens/motion';
+import { DocsPage, TokenGrid, DataTable, Card, CardGrid, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Foundations/Design Tokens" />
+
+<DocsPage
+  title="Design Tokens"
+  subtitle="The UI package exposes semantic tokens rather than one-off style values. These tokens are the stability layer between product needs and component implementation."
+>
+
+## Semantic color families
+
+<TokenGrid
+  tokens={[
+    { name: 'neutral.900', value: semanticColors.neutral[900], swatch: semanticColors.neutral[900] },
+    { name: 'neutral.50', value: semanticColors.neutral[50], swatch: semanticColors.neutral[50] },
+    { name: 'brand.500', value: semanticColors.brand[500], swatch: semanticColors.brand[500] },
+    { name: 'success.500', value: semanticColors.success[500], swatch: semanticColors.success[500] },
+    { name: 'warning.500', value: semanticColors.warning[500], swatch: semanticColors.warning[500] },
+    { name: 'critical.500', value: semanticColors.critical[500], swatch: semanticColors.critical[500] },
+    { name: 'info.500', value: semanticColors.info[500], swatch: semanticColors.info[500] },
+  ]}
+/>
+
+<CardGrid>
+  <Card title="Semantic first">
+    Use semantic families such as <code>brand</code>, <code>success</code>, and <code>critical</code> to preserve intent across themes and future redesigns.
+  </Card>
+  <Card title="Interactive layer">
+    Interactive text, background, border, and state tokens capture the actual UI contract used by components instead of leaking raw palette choices everywhere.
+  </Card>
+  <Card title="Theme-ready">
+    Dark mode values are represented as explicit overrides, which keeps theme switching predictable and avoids ad hoc component-level inversions.
+  </Card>
+</CardGrid>
+
+## Interactive token roles
+
+<DataTable
+  headers={['Token group', 'Example value', 'Usage']}
+  rows={[
+    ['text.primary', interactiveColors.text.primary, 'Default body and heading color on light surfaces'],
+    ['background.secondary', interactiveColors.background.secondary, 'Subtle surfaces, panels, and section fills'],
+    ['border.focus', interactiveColors.border.focus, 'Focus rings and keyboard-visible affordances'],
+    ['state.info', interactiveColors.state.info, 'Informational badges, hint banners, and charts'],
+  ]}
+/>
+
+## Spacing and layout primitives
+
+<DataTable
+  headers={['Primitive', 'Examples', 'Notes']}
+  rows={[
+    ['Spacing scale', `${spacing[2]}, ${spacing[4]}, ${spacing[8]}, ${spacing[16]}`, '8px base scale with fine-grained 2px and 4px steps'],
+    ['Breakpoints', `${breakpoints.sm}, ${breakpoints.md}, ${breakpoints.lg}`, 'Mobile-first breakpoints shared by components and layout docs'],
+    ['Border radius', `${borderRadius.md}, ${borderRadius.xl}, ${borderRadius['3xl']}`, 'Choose tighter radii for controls and larger radii for panels'],
+    ['Shadows', `${shadows.sm}, ${shadows.lg}`, 'Use elevation sparingly to indicate hierarchy, not decoration'],
+  ]}
+/>
+
+## Typography and motion
+
+<DataTable
+  headers={['Category', 'Examples', 'Contract']}
+  rows={[
+    [
+      'Typography scale',
+      `${typography.scale.base.fontSize} / ${typography.scale.base.lineHeight}`,
+      'Body text starts at 16px / 24px for comfortable reading and a durable baseline grid.',
+    ],
+    [
+      'Semantic variants',
+      `h1, h2, body, button, caption`,
+      'Choose by meaning first so hierarchy remains consistent across apps.',
+    ],
+    [
+      'Motion duration',
+      `${motionTokens.duration.fast}, ${motionTokens.duration.base}, ${motionTokens.duration.slow}`,
+      'Short motion for feedback, medium motion for state transitions, slower motion for entrance or exit.',
+    ],
+    [
+      'Easing',
+      `${motionTokens.easing.standard}, ${motionTokens.easing['emphasis-out']}`,
+      'Default easing should feel calm; emphasis easing should be rare and purposeful.',
+    ],
+  ]}
+/>
+
+<Callout>
+  Tokens are documentation artifacts as much as implementation artifacts. If a new pattern needs a value repeatedly, promote it into the token layer instead of scattering literals across stories and apps.
+</Callout>
+
+## Dark mode token snapshot
+
+<TokenGrid
+  tokens={[
+    { name: 'dark.text.primary', value: darkModeColors.text.primary, swatch: darkModeColors.text.primary },
+    { name: 'dark.background.primary', value: darkModeColors.background.primary, swatch: darkModeColors.background.primary },
+    { name: 'dark.border.focus', value: darkModeColors.border.focus, swatch: darkModeColors.border.focus },
+    { name: 'dark.state.info', value: darkModeColors.state.info, swatch: darkModeColors.state.info },
+  ]}
+/>
+
+</DocsPage>

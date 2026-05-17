@@ -1,0 +1,59 @@
+import { Meta } from '@storybook/blocks';
+import { interactiveColors, darkModeColors } from '../../../packages/ui/src/tokens/colors';
+import { DocsPage, DataTable, Card, CardGrid, Callout, DoDont } from './docs/DocsPrimitives';
+
+<Meta title="Foundations/Dark Mode Strategy" />
+
+<DocsPage
+  title="Dark Mode Strategy"
+  subtitle="Dark mode is implemented as a first-class token override strategy. Components should adapt through semantic roles rather than branching into bespoke dark-only implementations."
+>
+
+## Strategy summary
+
+<CardGrid>
+  <Card title="Semantic substitution">
+    Components should read from semantic roles like text, background, border, and state tokens. Theme changes should swap token values rather than rewrite component structure.
+  </Card>
+  <Card title="Theme parity">
+    The same information hierarchy should survive both themes. Dark mode is not an alternate product design; it is a color-system translation of the same interface contract.
+  </Card>
+  <Card title="Contrast discipline">
+    Secondary text, dividers, and subtle states often fail first in dark themes. Validate contrast there instead of checking only primary text on primary backgrounds.
+  </Card>
+</CardGrid>
+
+## Token mapping
+
+<DataTable
+  headers={['Semantic role', 'Light token', 'Dark token']}
+  rows={[
+    ['Primary text', interactiveColors.text.primary, darkModeColors.text.primary],
+    ['Secondary text', interactiveColors.text.secondary, darkModeColors.text.secondary],
+    ['Primary background', interactiveColors.background.primary, darkModeColors.background.primary],
+    ['Secondary background', interactiveColors.background.secondary, darkModeColors.background.secondary],
+    ['Primary border', interactiveColors.border.primary, darkModeColors.border.primary],
+    ['Focus border', interactiveColors.border.focus, darkModeColors.border.focus],
+  ]}
+/>
+
+<DoDont
+  doTitle="Theme correctly"
+  doItems={[
+    'Move theme differences into tokens and shared surface variables.',
+    'Verify states like hover, pressed, disabled, and focus in both themes.',
+    'Keep charts, badges, and system states legible without relying on pure saturation.',
+  ]}
+  dontTitle="Avoid dark mode drift"
+  dontItems={[
+    'Hard-coding one-off dark colors inside product components.',
+    'Using dark mode to justify weaker contrast because the palette feels softer.',
+    'Creating theme-specific layouts that break documentation and testing parity.',
+  ]}
+/>
+
+<Callout>
+  Dark mode strategy succeeds when engineers can build once against semantic roles and trust the theme layer to preserve intent. If a component requires repeated dark-mode exceptions, the token model likely needs refinement.
+</Callout>
+
+</DocsPage>

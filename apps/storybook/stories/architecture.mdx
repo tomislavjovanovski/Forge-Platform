@@ -1,0 +1,42 @@
+import { Meta } from '@storybook/blocks';
+import { DocsPage, Card, CardGrid, DataTable, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Architecture Decisions" />
+
+<DocsPage
+  title="Architectural Decisions"
+  subtitle="The platform architecture favors modular ownership, strict typing, and shared infrastructure so multiple apps can evolve without fragmenting patterns or quality standards."
+>
+
+## Guiding architecture choices
+
+<CardGrid>
+  <Card title="Monorepo by design">
+    The repository uses pnpm workspaces and Turborepo so shared UI, testing, analytics, auth, and monitoring code can evolve with coordinated type safety.
+  </Card>
+  <Card title="Explicit package boundaries">
+    Applications, shared packages, infrastructure config, and testing utilities are separated so ownership remains clear and imports stay intentional.
+  </Card>
+  <Card title="Strict TypeScript">
+    Strict mode plus additional flags make cross-package refactors safer and keep the public surface of shared packages honest.
+  </Card>
+</CardGrid>
+
+## Primary decisions and rationale
+
+<DataTable
+  headers={['Decision', 'Why it exists', 'Trade-off']}
+  rows={[
+    ['pnpm workspaces + Turborepo', 'Shared installs, deterministic versions, cached task orchestration', 'More initial structure than a single-app repo'],
+    ['Radix-style headless component approach', 'Accessibility and composability stay explicit while styling remains flexible', 'Requires more system-level styling discipline'],
+    ['Tailwind for implementation styling', 'Fast iteration, consistent primitives, strong alignment with tokens and design system rules', 'Requires utility conventions and good docs to avoid inconsistency'],
+    ['Zustand for state', 'Lightweight state with low ceremony and good TypeScript ergonomics', 'Less prescribed structure than Redux for very large teams'],
+    ['Vitest and Playwright split', 'Fast local iteration plus reliable browser-level coverage', 'Two layers of tooling to maintain intentionally'],
+  ]}
+/>
+
+<Callout>
+  Architecture docs should explain why the current system exists, not just list the pieces. When a decision no longer pays its cost, update the decision record instead of forcing new work to bend around stale rationale.
+</Callout>
+
+</DocsPage>

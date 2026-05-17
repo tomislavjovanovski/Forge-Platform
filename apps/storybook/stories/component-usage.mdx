@@ -1,0 +1,72 @@
+import { Meta, Canvas } from '@storybook/blocks';
+import * as ButtonStories from './button.stories';
+import * as DialogStories from './dialog.stories';
+import * as InputStories from './input.stories';
+import { DocsPage, Card, CardGrid, DoDont, DataTable, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Component Usage Guidelines" />
+
+<DocsPage
+  title="Component Usage Guidelines"
+  subtitle="Component stories show how a component behaves. These guidelines explain when a component should be chosen, what responsibilities remain with the product team, and which misuse patterns to avoid."
+>
+
+## Selection principles
+
+<CardGrid>
+  <Card title="Choose by semantics">
+    Pick the component that matches the user’s intent, not just the visual shape you want. A primary call to action is a button, a persistent navigation target is a link, and a modal interruption needs dialog semantics.
+  </Card>
+  <Card title="Respect component boundaries">
+    Keep shared components general. Product-specific workflows, analytics labels, business validation, and orchestration logic should stay in the consuming app layer.
+  </Card>
+  <Card title="Prefer composition over forks">
+    Wrap or compose shared components before duplicating them into app code. Forking should be reserved for truly divergent behavior or ownership boundaries.
+  </Card>
+</CardGrid>
+
+## Reference implementations
+
+### Button
+
+<Canvas of={ButtonStories.Default} />
+
+### Dialog
+
+<Canvas of={DialogStories.Default} />
+
+### Input
+
+<Canvas of={InputStories.Default} />
+
+## Shared expectations
+
+<DataTable
+  headers={['Component', 'Use it for', 'App-level responsibilities']}
+  rows={[
+    ['Button', 'Primary and secondary actions, command triggers, async submissions', 'Action semantics, analytics events, disabled logic, loading state ownership'],
+    ['Dialog', 'Interruptive workflows, confirmations, short focused tasks', 'Open state orchestration, task completion, destructive copy review, focus return expectations'],
+    ['Input', 'Validated text entry, inline forms, search and filters', 'Validation rules, async submission, helper text accuracy, error messaging'],
+  ]}
+/>
+
+<DoDont
+  doTitle="Prefer"
+  doItems={[
+    'Supplying clear labels and explicit loading or disabled states.',
+    'Composing layout and domain logic around shared primitives.',
+    'Documenting new patterns in Storybook when wrappers become common.',
+  ]}
+  dontTitle="Avoid"
+  dontItems={[
+    'Using variant props as a substitute for new semantics.',
+    'Embedding feature-specific business logic inside the shared package.',
+    'Creating app-local visual copies of components without documenting why the shared version was insufficient.',
+  ]}
+/>
+
+<Callout>
+  When a wrapper pattern appears in more than one app, that is usually a signal to document it here and consider whether the shared component API should evolve.
+</Callout>
+
+</DocsPage>

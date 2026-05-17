@@ -1,0 +1,60 @@
+import { Meta } from '@storybook/blocks';
+import { DocsPage, Card, CardGrid, DataTable, Callout, ChipRow } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Testing" />
+
+<DocsPage
+  title="Testing Documentation"
+  subtitle="forge-platform follows a testing pyramid that keeps fast feedback close to component development while reserving end-to-end coverage for critical journeys and integration risk."
+>
+
+## Testing pyramid
+
+<ChipRow
+  items={[
+    { label: 'Unit', value: 'Vitest + component-level assertions' },
+    { label: 'Integration', value: 'Vitest + React Testing Library + MSW' },
+    { label: 'E2E', value: 'Playwright for user-critical journeys' },
+  ]}
+/>
+
+<CardGrid>
+  <Card title="Unit tests">
+    Validate component rendering, local state, data formatting, and variant behavior in isolation. These are the fastest and most numerous tests.
+  </Card>
+  <Card title="Integration tests">
+    Exercise component collaboration, async flows, mocked network interactions, and store behavior using MSW and realistic DOM queries.
+  </Card>
+  <Card title="E2E tests">
+    Cover flows that matter to release confidence: navigation, authentication, checkout-like journeys, dashboards, and regressions that depend on full-browser behavior.
+  </Card>
+</CardGrid>
+
+## Tooling strategy
+
+<DataTable
+  headers={['Concern', 'Tool', 'Why it exists']}
+  rows={[
+    ['Local unit and integration', 'Vitest', 'Fast ESM-native feedback that aligns with Vite and TypeScript'],
+    ['DOM assertions', 'React Testing Library', 'Encourages tests that follow user-visible semantics instead of implementation details'],
+    ['API mocking', 'MSW', 'Mocks the HTTP layer realistically for stories, integration tests, and browser sessions'],
+    ['Journey validation', 'Playwright', 'Covers cross-browser flows and real interaction timing'],
+  ]}
+/>
+
+## What to assert
+
+<DataTable
+  headers={['Layer', 'Primary assertions', 'Typical anti-pattern']}
+  rows={[
+    ['Unit', 'Accessible name, disabled state, variant behavior, emitted callbacks', 'Snapshotting large trees instead of checking behavior'],
+    ['Integration', 'Async loading, retries, validation, store transitions, error states', 'Mocking so much that the test no longer resembles real usage'],
+    ['E2E', 'Navigation, persistence, browser-specific flows, smoke coverage', 'Re-testing every unit-level branch in a browser'],
+  ]}
+/>
+
+<Callout>
+  Storybook should reinforce testing, not replace it. Stories are living examples and debugging surfaces; tests are the executable guarantees that the examples keep working.
+</Callout>
+
+</DocsPage>

@@ -1,0 +1,67 @@
+import { Meta } from '@storybook/blocks';
+import { motionTokens, animationGuidelines } from '../../../packages/ui/src/tokens/motion';
+import { DocsPage, DataTable, Card, CardGrid, Callout, DoDont } from './docs/DocsPrimitives';
+
+<Meta title="Foundations/Motion Guidelines" />
+
+<DocsPage
+  title="Motion Guidelines"
+  subtitle="Motion should clarify state, preserve continuity, and reinforce interaction confidence. It should not become a default decoration layer or compete with task completion."
+>
+
+## Tokenized motion system
+
+<DataTable
+  headers={['Category', 'Examples', 'Use case']}
+  rows={[
+    ['Duration', `${motionTokens.duration.fast}, ${motionTokens.duration.base}, ${motionTokens.duration.slow}`, 'Feedback, state transitions, and controlled entrances'],
+    ['Easing', `${motionTokens.easing.standard}, ${motionTokens.easing['standard-decelerate']}, ${motionTokens.easing['emphasis-out']}`, 'Default motion, exits, and rare moments of emphasis'],
+    ['Transitions', `${motionTokens.transition.opacity}, ${motionTokens.transition.transform}`, 'Simple reusable CSS transitions across components'],
+  ]}
+/>
+
+## Recommended operating ranges
+
+<CardGrid>
+  <Card title="Micro-interactions">
+    Use the fastest and fast duration tokens for hover, focus, and pressed feedback. These should feel immediate and rarely exceed 150ms.
+  </Card>
+  <Card title="State changes">
+    Use the base duration token and standard easing when panels expand, content updates, or tabs switch. This is the default motion layer.
+  </Card>
+  <Card title="Entrances and exits">
+    Reserve slower durations for overlays, staged reveals, or patterns where continuity matters. Longer motion needs stronger justification.
+  </Card>
+</CardGrid>
+
+<DataTable
+  headers={['Guideline', 'Current token mapping']}
+  rows={[
+    ['Micro interaction', `${animationGuidelines.microInteraction.duration} / ${animationGuidelines.microInteraction.easing}`],
+    ['State change', `${animationGuidelines.stateChange.duration} / ${animationGuidelines.stateChange.easing}`],
+    ['Entrance', `${animationGuidelines.entrance.duration} / ${animationGuidelines.entrance.easing}`],
+    ['Exit', `${animationGuidelines.exit.duration} / ${animationGuidelines.exit.easing}`],
+    ['Loading', `${animationGuidelines.loading.duration} / ${animationGuidelines.loading.easing}`],
+  ]}
+/>
+
+<DoDont
+  doTitle="Use motion to"
+  doItems={[
+    'Indicate causality when an action changes interface state.',
+    'Preserve orientation when overlays or panels appear.',
+    'Give fast but readable feedback for focus, hover, and validation.',
+  ]}
+  dontTitle="Avoid motion that"
+  dontItems={[
+    'Adds delay to frequently repeated actions.',
+    'Uses bounce or elastic curves in enterprise task flows without a specific reason.',
+    'Conflicts with reduced motion preferences or makes focus harder to track.',
+  ]}
+/>
+
+<Callout>
+  The presence of motion tokens does not mean every interaction needs animation. The default should be calm, useful, and easy to disable when user preference requires it.
+</Callout>
+
+</DocsPage>

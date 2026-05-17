@@ -1,0 +1,70 @@
+import { Meta } from '@storybook/blocks';
+import { breakpoints, containerWidths, mediaQueries } from '../../../packages/ui/src/tokens/spacing';
+import { DocsPage, DataTable, Card, CardGrid, DoDont, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Foundations/Responsive Behavior" />
+
+<DocsPage
+  title="Responsive Behavior"
+  subtitle="Responsive behavior in forge-platform is mobile-first. Layout, density, and interaction models should scale across breakpoints without hiding critical workflows or overloading smaller viewports."
+>
+
+## Breakpoint system
+
+<DataTable
+  headers={['Token', 'Value', 'Primary role']}
+  rows={[
+    ['xs', breakpoints.xs, 'Smallest supported screens and dense utility layouts'],
+    ['sm', breakpoints.sm, 'Tablet entry and stacked-to-split transitions'],
+    ['md', breakpoints.md, 'Small laptop layouts and medium dashboards'],
+    ['lg', breakpoints.lg, 'Desktop feature layouts and persistent sidebars'],
+    ['xl', breakpoints.xl, 'Wide content canvases and analytics-heavy views'],
+    ['2xl', breakpoints['2xl'], 'Large displays with expanded whitespace and multi-panel views'],
+  ]}
+/>
+
+## Authoring rules
+
+<CardGrid>
+  <Card title="Start narrow">
+    Begin with the smallest useful layout and add complexity as space increases. This keeps information architecture honest and avoids desktop-first overflow fixes.
+  </Card>
+  <Card title="Protect hierarchy">
+    Priority actions, status, and core content should remain visible on smaller screens. Secondary utilities can collapse or move, but intent cannot disappear.
+  </Card>
+  <Card title="Scale density deliberately">
+    More columns do not automatically mean better use of width. Use larger breakpoints to improve scanability, comparison, and workflow continuity.
+  </Card>
+</CardGrid>
+
+## Reference values
+
+<DataTable
+  headers={['Concern', 'Examples']}
+  rows={[
+    ['Container widths', `${containerWidths.sm}, ${containerWidths.md}, ${containerWidths.lg}, ${containerWidths.xl}`],
+    ['Media queries', `${mediaQueries.sm}, ${mediaQueries.md}, ${mediaQueries.lg}`],
+    ['Typical transition', 'Single-column to split layout at sm or md, persistent nav at lg, multi-panel dashboards at xl'],
+  ]}
+/>
+
+<DoDont
+  doTitle="Responsive best practice"
+  doItems={[
+    'Promote information hierarchy before adding more columns.',
+    'Use wrapping, stacking, and progressive disclosure for controls.',
+    'Test keyboard and focus order again whenever layout shifts significantly by breakpoint.',
+  ]}
+  dontTitle="Common failure mode"
+  dontItems={[
+    'Relying on horizontal scrolling to rescue a dense layout.',
+    'Shrinking text below comfortable reading sizes just to keep everything visible.',
+    'Introducing radically different interaction models between adjacent breakpoints without documenting the reason.',
+  ]}
+/>
+
+<Callout>
+  Responsive design is not just about resizing components. It is about preserving task flow and comprehension as the layout system rebalances around different amounts of space.
+</Callout>
+
+</DocsPage>

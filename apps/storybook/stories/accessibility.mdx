@@ -1,0 +1,61 @@
+import { Meta } from '@storybook/blocks';
+import { DocsPage, Card, CardGrid, DataTable, DoDont, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Accessibility" />
+
+<DocsPage
+  title="Accessibility Documentation"
+  subtitle="Accessibility is treated as a product quality requirement, not a finishing pass. Components, stories, and app features should ship with keyboard, semantics, and contrast accounted for by default."
+>
+
+## Accessibility baseline
+
+<CardGrid>
+  <Card title="Headless primitives">
+    The UI package favors headless or minimally opinionated patterns so accessibility semantics can stay explicit and inspectable.
+  </Card>
+  <Card title="Storybook checks">
+    The Storybook a11y addon is enabled to surface violations while components are being developed and reviewed.
+  </Card>
+  <Card title="Testing alignment">
+    Unit, integration, and E2E tests should assert roles, names, focus behavior, and keyboard interaction where those behaviors are user-critical.
+  </Card>
+</CardGrid>
+
+## Required checks before merging
+
+<DataTable
+  headers={['Area', 'Expectation', 'Examples']}
+  rows={[
+    ['Semantics', 'Interactive elements have appropriate roles and accessible names.', 'Buttons, dialogs, labels, alerts, navigation landmarks'],
+    ['Keyboard support', 'All primary workflows remain operable without a pointer.', 'Dialog open and close, tab order, enter and escape handling'],
+    ['Focus visibility', 'Focus state is clearly visible against every supported surface.', 'Custom buttons, icon-only controls, dense toolbars'],
+    ['Contrast', 'Text and key affordances maintain readable contrast in both light and dark contexts.', 'Secondary text, borders, badges, inline validation'],
+    ['Reduced motion', 'Motion-heavy features degrade gracefully for users who prefer reduced motion.', 'Animated entrances, loaders, chart transitions'],
+  ]}
+/>
+
+## Authoring guidance
+
+<DoDont
+  doTitle="Do"
+  doItems={[
+    'Use native elements first and layer styling on top of them.',
+    'Treat aria labels as a fallback when visible text cannot carry the name.',
+    'Document keyboard expectations directly in component docs when behavior is non-trivial.',
+    'Fail stories loudly when interactive state depends on hidden assumptions.',
+  ]}
+  dontTitle="Avoid"
+  dontItems={[
+    'Building clickable divs when a button or link would provide semantics for free.',
+    'Relying on color alone to communicate state or severity.',
+    'Animating focus targets in ways that obscure where the user currently is.',
+    'Treating addon-a11y warnings as optional when they affect shipped usage patterns.',
+  ]}
+/>
+
+<Callout>
+  WCAG conformance is the floor. The actual goal is reliable task completion for keyboard users, screen reader users, and users operating under constrained motion, contrast, or attention conditions.
+</Callout>
+
+</DocsPage>

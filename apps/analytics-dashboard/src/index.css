@@ -1,3 +1,31 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply m-0 min-h-screen bg-slate-950 text-slate-100 antialiased;
+    background-image:
+      radial-gradient(circle at top left, rgba(34, 211, 238, 0.16), transparent 32%),
+      radial-gradient(circle at top right, rgba(59, 130, 246, 0.12), transparent 28%),
+      linear-gradient(180deg, #020617 0%, #0f172a 55%, #020617 100%);
+  }
+
+  * {
+    scrollbar-color: rgba(148, 163, 184, 0.35) rgba(15, 23, 42, 0.3);
+  }
+}
+
+@layer components {
+  .analytics-shell {
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    background-position: center center;
+    background-size: 32px 32px;
+  }
+}

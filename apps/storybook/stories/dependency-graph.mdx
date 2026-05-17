@@ -1,0 +1,63 @@
+import { Meta } from '@storybook/blocks';
+import { DocsPage, DependencyGraph, DataTable, Callout } from './docs/DocsPrimitives';
+
+<Meta title="Engineering/Package Dependency Graph" />
+
+<DocsPage
+  title="Package Dependency Graph"
+  subtitle="The monorepo is intentionally layered so applications consume shared packages while build, testing, analytics, and monitoring concerns remain reusable and independently understandable."
+>
+
+## Visual grouping
+
+<DependencyGraph
+  columns={[
+    {
+      title: 'Applications',
+      nodes: [
+        { name: 'admin-dashboard', description: '@forge/ui, @forge/auth, @forge/analytics, @forge/monitoring' },
+        { name: 'analytics-dashboard', description: '@forge/ui, @forge/analytics, @forge/monitoring' },
+        { name: 'public-portal', description: '@forge/ui, @forge/auth, @forge/monitoring' },
+        { name: 'storybook', description: '@forge/ui documentation and engineering guidance' },
+      ],
+    },
+    {
+      title: 'Shared platform packages',
+      nodes: [
+        { name: '@forge/ui', description: 'Component primitives, tokens, utilities, shared styles' },
+        { name: '@forge/auth', description: 'Authentication hooks, providers, and state' },
+        { name: '@forge/analytics', description: 'Event tracking and behavioral instrumentation' },
+        { name: '@forge/monitoring', description: 'Error tracking, observability, and a11y helpers' },
+        { name: '@forge/testing', description: 'MSW fixtures, test helpers, and QA scaffolding' },
+      ],
+    },
+    {
+      title: 'Infrastructure',
+      nodes: [
+        { name: 'Root TypeScript config', description: 'Strictness, path aliases, incremental builds' },
+        { name: 'Tailwind and PostCSS', description: 'Design system compilation and utility generation' },
+        { name: 'Turborepo', description: 'Task scheduling, caching, and build orchestration' },
+        { name: 'pnpm workspace', description: 'Dependency graph, linking, and lockfile consistency' },
+      ],
+    },
+  ]}
+/>
+
+## Package relationships
+
+<DataTable
+  headers={['Package', 'Depends on', 'Primary purpose']}
+  rows={[
+    ['@forge/ui', 'class-variance-authority, clsx, tailwind-merge', 'Shared components, tokens, UI utilities'],
+    ['@forge/auth', 'zustand', 'Authentication state and provider flows'],
+    ['@forge/analytics', 'PostHog-oriented tracking layer', 'Reusable analytics instrumentation'],
+    ['@forge/monitoring', 'Sentry, axe-related tooling', 'Error tracking and accessibility support'],
+    ['@forge/testing', 'Vitest, RTL, MSW and related package fixtures', 'Testing utilities reusable across apps'],
+  ]}
+/>
+
+<Callout>
+  A package dependency graph is also an ownership graph. When code starts reaching across layers in surprising ways, Storybook docs should be updated alongside the architectural boundary that changed.
+</Callout>
+
+</DocsPage>

@@ -8,12 +8,16 @@ export class AnalyticsPage {
   }
 
   async expectHeading() {
-    await expect(this.page.locator('h1')).toHaveText('Analytics Dashboard');
+    await expect(this.page.getByTestId('dashboard-heading')).toHaveText(
+      'Observability Command Center'
+    );
   }
 
-  async expectWelcomeMessage() {
-    await expect(this.page.locator('main p')).toHaveText(
-      'Welcome to forge-platform analytics dashboard'
+  async expectDashboardWidgets() {
+    await expect(this.page.getByTestId('dashboard-subtitle')).toContainText(
+      'Realtime metrics'
     );
+    await expect(this.page.getByTestId('realtime-metrics-widget')).toBeVisible();
+    await expect(this.page.getByTestId('error-tracking-widget')).toBeVisible();
   }
 }

@@ -1,14 +1,19 @@
 import type { Preview } from '@storybook/react';
 import '../../../packages/ui/src/styles.css';
+import './docs.css';
 
 const preview: Preview = {
   parameters: {
     actions: { argTypesRegex: '^on[A-Z].*' },
     controls: {
+      expanded: true,
       matchers: {
         color: /(background|color)$/i,
         date: /Date$/,
       },
+    },
+    docs: {
+      toc: true,
     },
   },
 };
