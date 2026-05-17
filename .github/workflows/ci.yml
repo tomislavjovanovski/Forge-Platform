@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [admin-dashboard, analytics-dashboard, public-portal]
+        app: [dashboard, playground]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
@@ -73,9 +73,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - app: admin-dashboard
+          - app: dashboard
             port: 4173
-          - app: analytics-dashboard
+          - app: playground
             port: 4174
         browser: [chromium, firefox, webkit]
     steps:
@@ -125,8 +125,8 @@ jobs:
           node-version: 20
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build --filter=@forge/admin-dashboard
+      - run: pnpm build --filter=@forge/dashboard
       - run: |
-          pnpm --dir ./apps/admin-dashboard exec vite preview --host 127.0.0.1 --port 4173 --strictPort &
+          pnpm --dir ./apps/dashboard exec vite preview --host 127.0.0.1 --port 4173 --strictPort &
           sleep 8
           pnpm exec lhci autorun --config .lighthouserc.json

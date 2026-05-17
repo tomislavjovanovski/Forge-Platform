@@ -15,10 +15,10 @@ Deployable end-user products with complete feature sets.
 - Testing: Full pyramid (unit, integration, e2e)
 - Deployment: Independent CI/CD pipeline
 
-**Example: admin-dashboard**
+**Example: dashboard**
 
 ```
-apps/admin-dashboard/
+apps/dashboard/
 ├── src/
 │   ├── main.tsx           # Entry point
 │   ├── App.tsx            # Root component
@@ -38,7 +38,7 @@ apps/admin-dashboard/
 **Package.json**:
 ```json
 {
-  "name": "@forge/admin-dashboard",
+  "name": "@forge/dashboard",
   "private": true,
   "scripts": {
     "dev": "vite",
@@ -56,16 +56,16 @@ apps/admin-dashboard/
 **Development Workflow**:
 ```bash
 # Start dev server
-pnpm dev:admin
+pnpm dev:dashboard
 
 # Build
-pnpm build --filter=@forge/admin-dashboard
+pnpm build --filter=@forge/dashboard
 
 # Test
-pnpm test --filter=@forge/admin-dashboard
+pnpm test --filter=@forge/dashboard
 
 # E2E
-pnpm test:e2e --filter=@forge/admin-dashboard
+pnpm test:e2e --filter=@forge/dashboard
 ```
 
 ### 2. Platform Packages (packages/)
@@ -476,7 +476,7 @@ import { component } from '@/components/component';
 import { Dialog } from '../../../../packages/ui/src';
 
 // ❌ DON'T - Cross-import from apps
-import { Dashboard } from '@forge/admin-dashboard'; // Not exported!
+import { Dashboard } from '@forge/dashboard'; // Not exported!
 ```
 
 ## Package Versioning

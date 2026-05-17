@@ -1,7 +1,7 @@
 {
-  "name": "@forge/public-portal",
+  "name": "@forge/playground",
   "version": "1.0.0",
-  "description": "Public-facing customer portal application",
+  "description": "Frontend platform playground application",
   "private": true,
   "type": "module",
   "scripts": {
@@ -19,12 +19,13 @@
   "dependencies": {
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "@reduxjs/toolkit": "^1.9.0",
+    "react-redux": "^8.1.0",
     "@forge/ui": "workspace:*",
-    "@forge/auth": "workspace:*",
     "@forge/analytics": "workspace:*",
     "@forge/monitoring": "workspace:*",
     "zustand": "^4.4.0",
-    "zod": "^3.22.0"
+    "recharts": "^2.10.0"
   },
   "devDependencies": {
     "@types/react": "19.0.0",

@@ -1,11 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const isCI = Boolean(process.env.CI);
-const appName = process.env.PW_APP ?? 'admin-dashboard';
+const appName = process.env.PW_APP ?? 'dashboard';
 const portMap: Record<string, number> = {
-  'admin-dashboard': 4173,
-  'analytics-dashboard': 4174,
-  'public-portal': 4175,
+  'dashboard': 4173,
+  'playground': 4174,
 };
 const port = Number(process.env.PW_PORT ?? portMap[appName] ?? 4173);
 const baseURL = `http://127.0.0.1:${port}`;

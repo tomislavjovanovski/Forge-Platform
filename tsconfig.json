@@ -47,9 +47,8 @@
       "@forge/monitoring": ["packages/monitoring/src/index.ts"],
       "@forge/monitoring/*": ["packages/monitoring/src/*"],
       "@forge/eslint-config": ["packages/eslint-config/src/index.ts"],
-      "@apps/admin/*": ["apps/admin-dashboard/src/*"],
-      "@apps/analytics/*": ["apps/analytics-dashboard/src/*"],
-      "@apps/portal/*": ["apps/public-portal/src/*"],
+      "@apps/dashboard/*": ["apps/dashboard/src/*"],
+      "@apps/playground/*": ["apps/playground/src/*"],
       "@/*": ["./*"]
     },
 

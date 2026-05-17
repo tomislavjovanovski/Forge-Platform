@@ -34,9 +34,8 @@ Enterprise-grade SaaS frontend platform monorepo showcasing senior-level fronten
 forge-platform/                          # Monorepo root
 │
 ├── apps/                                # End-user applications (3 independent apps)
-│   ├── admin-dashboard/                 # Internal admin interface
-│   ├── analytics-dashboard/             # Analytics and reporting
-│   ├── public-portal/                   # Customer-facing public app
+│   ├── dashboard/                 # Internal admin interface
+│   ├── playground/             # Analytics and reporting
 │   └── storybook/                       # Component library documentation
 │
 ├── packages/                            # Shared infrastructure (7 packages)
@@ -178,10 +177,9 @@ public-hoist-pattern[]=*prettier*
 
 ```bash
 # Development
-pnpm dev              # All dev servers (3000, 3001, 3002)
-pnpm dev:admin        # Admin dashboard only (3000)
-pnpm dev:analytics    # Analytics dashboard only (3001)
-pnpm dev:portal       # Public portal only (3002)
+pnpm dev              # All dev servers (3000, 3001)
+pnpm dev:dashboard    # Dashboard only (3000)
+pnpm dev:playground   # Playground only (3001)
 
 # Building
 pnpm build            # Build all apps (not Storybook)
@@ -291,9 +289,8 @@ UI Components Layer                       │
 └────────────────────────────────────────┤
                                           │
 Application Layer ◄─────────────────────── Path Aliases (@forge/*)
-├── admin-dashboard
-├── analytics-dashboard
-├── public-portal
+├── dashboard
+├── playground
 └── storybook
 ```
 
@@ -417,9 +414,8 @@ components/
 │     └─ Coverage Report (v8)             │
 ├─────────────────────────────────────────┤
 │  3. Build (Vite)                        │
-│     ├─ admin-dashboard                  │
-│     ├─ analytics-dashboard              │
-│     └─ public-portal                    │
+│     ├─ dashboard                  │
+│     ├─ playground              │
 ├─────────────────────────────────────────┤
 │  4. E2E Tests (Playwright)              │
 │     ├─ Chromium                         │

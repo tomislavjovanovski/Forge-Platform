@@ -273,7 +273,7 @@ test('loads data', async () => {
 ### App Structure
 
 ```
-apps/admin-dashboard/
+apps/dashboard/
 ├── src/
 │   ├── pages/           # Route pages
 │   │   ├── Dashboard.tsx

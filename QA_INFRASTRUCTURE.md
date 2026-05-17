@@ -31,11 +31,11 @@ The QA infrastructure is designed around three core layers:
   - `src/accessibility/` - accessibility integration helpers
 - `packages/analytics/`
   - `src/posthog.ts` - PostHog bootstrap and tracking utilities
-- `apps/admin-dashboard/tests/`
+- `apps/dashboard/tests/`
   - `page-objects/` - reusable page abstractions
   - `fixtures/` - app-specific mock data
   - `specs/` - focused smoke and regression tests
-- `apps/analytics-dashboard/tests/`
+- `apps/playground/tests/`
   - same structure for analytics-specific coverage
 
 ## Shared Playwright Configuration
@@ -73,8 +73,8 @@ Accessibility helpers are shared through `packages/testing/src/accessibility/ind
 Each app now has a small `page-objects/` directory for reusable page abstractions.
 This reduces brittle selectors and keeps test flows readable:
 
-- `apps/admin-dashboard/tests/page-objects/DashboardPage.ts`
-- `apps/analytics-dashboard/tests/page-objects/AnalyticsPage.ts`
+- `apps/dashboard/tests/page-objects/DashboardPage.ts`
+- `apps/playground/tests/page-objects/AnalyticsPage.ts`
 
 ## Test Utilities
 
@@ -132,7 +132,7 @@ This infrastructure is built for a large SaaS team:
 
 ## Recommended developer workflows
 
-- `pnpm test:e2e:admin` – targeted admin app E2E run
+- `pnpm test:e2e:dashboard` – targeted dashboard app E2E run
 - `pnpm test:accessibility` – run Axe checks across dedicated test files
 - `pnpm analyze:bundle` – generate bundle-analysis output
 - `pnpm exec lhci autorun --config .lighthouserc.json` – Lighthouse checks against a running preview

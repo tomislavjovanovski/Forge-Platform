@@ -47,15 +47,13 @@ pnpm dev
 
 Opens:
 - Admin Dashboard: http://localhost:3000
-- Analytics Dashboard: http://localhost:3001
-- Public Portal: http://localhost:3002
+- Playground: http://localhost:3001
 
 #### Specific App
 
 ```bash
-pnpm dev:admin         # Admin dashboard
-pnpm dev:analytics     # Analytics dashboard
-pnpm dev:portal        # Public portal
+pnpm dev:dashboard     # Dashboard
+pnpm dev:playground    # Playground
 ```
 
 #### Storybook (Component Library)
@@ -136,7 +134,7 @@ pnpm build
 ### Build Specific App
 
 ```bash
-turbo build --filter=@forge/admin-dashboard
+turbo build --filter=@forge/dashboard
 ```
 
 ### Build for Production
@@ -154,7 +152,7 @@ VITE_APP_ENV=production pnpm build
 turbo test --filter=@forge/ui
 
 # Run build in admin app
-turbo build --filter=@forge/admin-dashboard
+turbo build --filter=@forge/dashboard
 ```
 
 ### Visualize Dependency Graph
@@ -232,7 +230,7 @@ See [PACKAGES.md](./PACKAGES.md#creating-a-new-package)
 }
 ```
 
-3. Start dev server: `pnpm dev:admin`
+3. Start dev server: `pnpm dev:dashboard`
 4. Open Chrome DevTools (F12)
 5. Start debugging: F5 in VS Code
 

@@ -1,6 +1,6 @@
 # forge-platform
 
-A production-grade enterprise SaaS frontend platform built with React 19, TypeScript, Turborepo, and pnpm workspaces.
+A frontend platform engineering monorepo built with React 19, TypeScript, Turborepo, and pnpm workspaces.
 
 ## Architecture Overview
 
@@ -11,8 +11,8 @@ forge-platform is a carefully structured monorepo showcasing enterprise-grade fr
 - **Strict Typing**: TypeScript strict mode enforced across all packages
 - **Shared Infrastructure**: Centralized tooling, config, and utilities
 - **QA Automation**: Comprehensive testing pyramid (unit, integration, e2e, accessibility)
-- **Production Monitoring**: Integrated Sentry error tracking and PostHog analytics
-- **Component Library**: Radix UI-based shared component system
+- **Engineering Documentation**: Storybook-driven patterns, recipes, and standards
+- **Component Library**: Shared component and pattern system
 
 ## Quick Start
 
@@ -24,9 +24,8 @@ pnpm install
 pnpm dev
 
 # Start specific app
-pnpm dev:admin          # http://localhost:3000
-pnpm dev:analytics      # http://localhost:3001
-pnpm dev:portal         # http://localhost:3002
+pnpm dev:dashboard      # http://localhost:3000
+pnpm dev:playground     # http://localhost:3001
 
 # Build all
 pnpm build
@@ -48,9 +47,8 @@ pnpm type-check
 ```
 forge-platform/
 ├── apps/
-│   ├── admin-dashboard/      # Enterprise admin application
-│   ├── analytics-dashboard/  # Analytics and reporting app
-│   ├── public-portal/        # Customer-facing public portal
+│   ├── dashboard/            # Reusable application patterns
+│   ├── playground/           # Frontend engineering sandbox
 │   └── storybook/            # Component library documentation
 ├── packages/
 │   ├── ui/                   # Shared Radix UI component library
@@ -86,9 +84,8 @@ forge-platform/
     ┌────▼──────────────────┬─────────▼────────────┐
     │    Applications        │                     │
     ├───────────────────────┼─────────────────────┤
-    │ admin-dashboard       │ storybook           │
-    │ analytics-dashboard   │ (component catalog) │
-    │ public-portal         │                     │
+    │ dashboard             │ storybook           │
+    │ playground            │ (engineering docs)  │
     └───────────────────────┴─────────────────────┘
 ```
 
@@ -96,20 +93,15 @@ forge-platform/
 
 ### Applications (apps/)
 
-**admin-dashboard**
-- Internal enterprise admin interface
-- Dashboard, user management, settings
+**dashboard**
+- Reusable application shell and UI pattern examples
+- Tables, forms, dialogs, feature flags, and accessibility patterns
 - Uses: @forge/ui, @forge/auth, @forge/analytics, @forge/monitoring
 
-**analytics-dashboard**
-- Analytics and reporting application
-- Real-time metrics, custom reports
+**playground**
+- Frontend engineering sandbox
+- Realtime simulation, async boundaries, retry, and resilience patterns
 - Uses: @forge/ui, @forge/analytics, @forge/monitoring
-
-**public-portal**
-- Customer-facing public application
-- Self-service portal, documentation
-- Uses: @forge/ui, @forge/auth, @forge/monitoring
 
 **storybook**
 - Component library documentation and playground

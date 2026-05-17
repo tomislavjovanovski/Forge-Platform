@@ -8,16 +8,14 @@ Complete reference for navigating and working with forge-platform monorepo.
 forge-platform/
 │
 ├── apps/                           # End-user applications
-│   ├── admin-dashboard/            # Internal admin interface
+│   ├── dashboard/            # Internal admin interface
 │   │   ├── src/
 │   │   ├── e2e/
 │   │   ├── vite.config.ts
 │   │   ├── vitest.config.ts
 │   │   ├── tsconfig.json
 │   │   └── package.json
-│   ├── analytics-dashboard/        # Analytics and reporting
-│   │   └── [same structure]
-│   ├── public-portal/              # Customer-facing app
+│   ├── playground/        # Analytics and reporting
 │   │   └── [same structure]
 │   └── storybook/                  # Component library docs
 │       ├── .storybook/
@@ -119,9 +117,8 @@ forge-platform/
 @forge/ui             ← Radix UI, Tailwind, clsx
                       ← (pure component library)
 
-admin-dashboard       ← @forge/ui, @forge/auth, @forge/analytics, @forge/monitoring
-analytics-dashboard   ← @forge/ui, @forge/analytics, @forge/monitoring
-public-portal         ← @forge/ui, @forge/auth, @forge/monitoring
+dashboard       ← @forge/ui, @forge/auth, @forge/analytics, @forge/monitoring
+playground      ← @forge/ui, @forge/analytics, @forge/monitoring
 
 storybook             ← @forge/ui (only)
 ```
@@ -165,9 +162,8 @@ pnpm install --recursive
 pnpm dev
 
 # Start specific app dev server
-pnpm dev:admin          # http://localhost:3000
-pnpm dev:analytics      # http://localhost:3001
-pnpm dev:portal         # http://localhost:3002
+pnpm dev:dashboard      # http://localhost:3000
+pnpm dev:playground     # http://localhost:3001
 
 # Start Storybook
 pnpm dev:storybook      # http://localhost:6006
@@ -187,7 +183,7 @@ pnpm build:storybook
 
 # Build specific package with Turborepo
 turbo build --filter=@forge/ui
-turbo build --filter=@forge/admin-dashboard
+turbo build --filter=@forge/dashboard
 
 # Build and dependencies
 turbo build --filter=...@forge/ui
@@ -268,7 +264,7 @@ turbo build --parallel
 turbo build --no-daemon
 
 # Prune monorepo (for CI optimization)
-turbo prune --scope=@forge/admin-dashboard
+turbo prune --scope=@forge/dashboard
 ```
 
 ### Dependency Management
@@ -340,9 +336,8 @@ pnpm --filter ...@forge/ui          # Include dependents
 ```bash
 # Development
 pnpm dev              # Start all dev servers
-pnpm dev:admin        # Start specific app
-pnpm dev:analytics
-pnpm dev:portal
+pnpm dev:dashboard    # Start dashboard
+pnpm dev:playground   # Start playground
 
 # Building
 pnpm build            # Build all (except Storybook)
@@ -475,20 +470,20 @@ git push origin feature/new-component
 
 ```bash
 # 1. Make changes to app
-# Edit: apps/admin-dashboard/src/...
+# Edit: apps/dashboard/src/...
 
 # 2. Test locally
-pnpm dev:admin
+pnpm dev:dashboard
 # Visit http://localhost:3000
 
 # 3. Run tests
-turbo test --filter=@forge/admin-dashboard
+turbo test --filter=@forge/dashboard
 
 # 4. E2E tests
 pnpm test:e2e
 
 # 5. Build
-turbo build --filter=@forge/admin-dashboard
+turbo build --filter=@forge/dashboard
 
 # 6. Verify no regressions
 pnpm lint && pnpm type-check

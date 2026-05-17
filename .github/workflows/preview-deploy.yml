@@ -14,9 +14,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - app: admin-dashboard
+          - app: dashboard
             port: 4173
-          - app: analytics-dashboard
+          - app: playground
             port: 4174
     steps:
       - uses: actions/checkout@v4
