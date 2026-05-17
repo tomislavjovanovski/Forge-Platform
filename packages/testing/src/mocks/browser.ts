@@ -1,5 +1,5 @@
-import { setupWorker } from 'msw';
-import type { SetupWorkerApi } from 'msw';
+import { setupWorker } from 'msw/browser';
+import type { SetupWorkerApi } from 'msw/browser';
 import { defaultHandlers } from './handlers';
 
 export const worker: SetupWorkerApi = setupWorker(...defaultHandlers);

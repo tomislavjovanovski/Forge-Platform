@@ -1,8 +1,8 @@
-import { rest } from 'msw';
+import { http } from 'msw';
 import { fixtures } from '../fixtures';
 
 export const authHandlers = [
-  rest.post('/api/auth/login', async (req, res, ctx) => {
+  http.post('/api/auth/login', async (req, res, ctx) => {
     const body = await req.json();
     const email = (body as { email?: string }).email;
 
@@ -22,10 +22,10 @@ export const authHandlers = [
 
 export const defaultHandlers = [
   ...authHandlers,
-  rest.get('/api/user', (_req, res, ctx) =>
+  http.get('/api/user', (_req, res, ctx) =>
     res(ctx.status(200), ctx.json(fixtures.user))
   ),
-  rest.get('/api/feature-flags', (_req, res, ctx) =>
+  http.get('/api/feature-flags', (_req, res, ctx) =>
     res(
       ctx.status(200),
       ctx.json({

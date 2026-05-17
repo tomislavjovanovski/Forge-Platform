@@ -5,7 +5,7 @@
  */
 
 import React, { forwardRef, useEffect, useRef, useCallback } from 'react';
-import { cn } from '../utils/cn';
+import { cn } from '../../utils/cn';
 
 export interface DialogProps {
   /**
