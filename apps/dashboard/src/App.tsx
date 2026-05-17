@@ -11,7 +11,7 @@
  * - Feature flag example
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   AppShell,
   PageContainer,
@@ -78,7 +78,6 @@ const SETTINGS_FIELDS: FormField[] = [
 ];
 
 export default function App() {
-  const [isLoading, setIsLoading] = useState(false);
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 
@@ -196,7 +195,7 @@ export default function App() {
         {activeTab === 'users' && (
           <div className="space-y-6">
             <AsyncSection
-              isLoading={isLoading}
+              isLoading={false}
               isEmpty={SAMPLE_USERS.length === 0}
               title="Team Members"
               description="Manage team members and their roles"

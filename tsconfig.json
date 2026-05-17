@@ -29,6 +29,7 @@
     /* Modules */
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
+    "types": ["vite/client"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,

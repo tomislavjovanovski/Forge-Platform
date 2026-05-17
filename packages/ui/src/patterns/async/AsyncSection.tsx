@@ -23,6 +23,8 @@ export interface AsyncSectionProps {
   errorContent?: (error: Error) => ReactNode;
   /** Section title */
   title?: ReactNode;
+  /** Section description */
+  description?: ReactNode;
   /** CSS class name */
   className?: string;
 }
@@ -41,6 +43,7 @@ export const AsyncSection = React.forwardRef<HTMLDivElement, AsyncSectionProps>(
     emptyContent,
     errorContent,
     title,
+    description,
     className,
   }, ref) => {
     return (
@@ -49,6 +52,12 @@ export const AsyncSection = React.forwardRef<HTMLDivElement, AsyncSectionProps>(
           <h2 className="mb-4 text-lg font-semibold text-slate-900 dark:text-slate-50">
             {title}
           </h2>
+        )}
+
+        {description && (
+          <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
+            {description}
+          </p>
         )}
 
         {isLoading && (

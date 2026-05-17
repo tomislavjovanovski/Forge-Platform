@@ -20,6 +20,8 @@ export interface AsyncSectionProps {
     errorContent?: (error: Error) => ReactNode;
     /** Section title */
     title?: ReactNode;
+    /** Section description */
+    description?: ReactNode;
     /** CSS class name */
     className?: string;
 }
