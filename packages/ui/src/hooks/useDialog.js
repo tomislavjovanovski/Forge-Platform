@@ -1,0 +1,141 @@
+/**
+ * Custom React hooks for design system
+ */
+import { useCallback, useEffect, useState } from 'react';
+/**
+ * Hook for managing dialog state
+ */
+export function useDialog(initialOpen = false) {
+    const [isOpen, setIsOpen] = useState(initialOpen);
+    const open = useCallback(() => setIsOpen(true), []);
+    const close = useCallback(() => setIsOpen(false), []);
+    const toggle = useCallback(() => setIsOpen((prev) => !prev), []);
+    return { isOpen, open, close, toggle, setIsOpen };
+}
+/**
+ * Hook for managing theme preference
+ */
+export function useTheme() {
+    const [theme, setTheme] = useState('system');
+    useEffect(() => {
+        // Get saved theme or system preference
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            setTheme(saved);
+        }
+        else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setTheme(prefersDark ? 'dark' : 'light');
+        }
+    }, []);
+    const toggleTheme = useCallback(() => {
+        setTheme((prev) => {
+            const next = prev === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', next);
+            document.documentElement.classList.toggle('dark', next === 'dark');
+            return next;
+        });
+    }, []);
+    return { theme, toggleTheme, setTheme };
+}
+/**
+ * Hook for keyboard navigation
+ */
+export function useKeyboardNav(onEscape, onEnter) {
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Escape' && onEscape) {
+                event.preventDefault();
+                onEscape();
+            }
+            if (event.key === 'Enter' && onEnter) {
+                event.preventDefault();
+                onEnter();
+            }
+        };
+        document.addEventListener('keydown', handleKeyDown);
+        return () => document.removeEventListener('keydown', handleKeyDown);
+    }, [onEscape, onEnter]);
+}
+/**
+ * Hook for managing focus trap within an element
+ */
+export function useFocusTrap(containerRef, isActive = true) {
+    useEffect(() => {
+        if (!isActive || !containerRef.current)
+            return;
+        const container = containerRef.current;
+        const focusableElements = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusableElements.length === 0)
+            return;
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        const handleKeyDown = (event) => {
+            if (event.key !== 'Tab')
+                return;
+            if (event.shiftKey) {
+                if (document.activeElement === firstElement) {
+                    event.preventDefault();
+                    lastElement.focus();
+                }
+            }
+            else {
+                if (document.activeElement === lastElement) {
+                    event.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        };
+        container.addEventListener('keydown', handleKeyDown);
+        firstElement.focus();
+        return () => {
+            container.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [containerRef, isActive]);
+}
+/**
+ * Hook for detecting click outside
+ */
+export function useClickOutside(ref, callback) {
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (ref.current && !ref.current.contains(event.target)) {
+                callback();
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [ref, callback]);
+}
+/**
+ * Hook for responsive design queries
+ */
+export function useMediaQuery(query) {
+    const [matches, setMatches] = useState(false);
+    useEffect(() => {
+        const media = window.matchMedia(query);
+        if (media.matches !== matches) {
+            setMatches(media.matches);
+        }
+        const listener = () => setMatches(media.matches);
+        media.addEventListener('change', listener);
+        return () => media.removeEventListener('change', listener);
+    }, [matches, query]);
+    return matches;
+}
+/**
+ * Hook for managing controlled/uncontrolled components
+ */
+export function useControlledState(controlledValue, defaultValue, onChange) {
+    const [internalValue, setInternalValue] = useState(defaultValue);
+    const isControlled = controlledValue !== undefined;
+    const value = isControlled ? controlledValue : internalValue;
+    const setValue = useCallback((newValue) => {
+        if (!isControlled) {
+            setInternalValue(newValue);
+        }
+        onChange?.(newValue);
+    }, [isControlled, onChange]);
+    return [value, setValue];
+}
+//# sourceMappingURL=useDialog.js.map

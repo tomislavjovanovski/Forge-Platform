@@ -1,0 +1,195 @@
+# Frontend Patterns
+
+This Storybook showcases **reusable frontend application patterns** - higher-level composable components that serve as the foundation for application architecture.
+
+Unlike primitive components (Button, Input), patterns represent proven solutions to recurring frontend problems.
+
+## Pattern Categories
+
+### Layouts
+Application structure and composition patterns:
+- **AppShell** - Primary layout with responsive sidebar and header
+- **PageContainer** - Responsive content wrapper with max-width
+
+### Async
+State handling and async boundary patterns:
+- **AsyncSection** - Loading, error, and empty state handling
+- **RetryBoundary** - Automatic retry with exponential backoff (coming soon)
+- **SuspenseBoundary** - React Suspense integration (coming soon)
+
+### Data
+Data presentation patterns:
+- **FilterableTable** - Sortable, searchable table with responsive design
+- **MetricGrid** - Grid display for metrics and KPIs (coming soon)
+- **VirtualizedList** - Large list rendering with virtualization (coming soon)
+
+### Forms
+Form and input patterns:
+- **SettingsForm** - Configuration form with validation
+- **FormSection** - Grouped form fields (coming soon)
+- **ValidationSummary** - Form error aggregation (coming soon)
+
+### UX
+User experience utility patterns:
+- **ThemeSwitcher** - Dark/light mode toggle
+- **CommandPalette** - Command palette/search interface (coming soon)
+- **FeatureFlagPanel** - Feature flag management UI (coming soon)
+
+### Realtime
+Real-time and WebSocket patterns:
+- **RealtimePanel** - Real-time data display (coming soon)
+- **RetryBanner** - Connection retry UI (coming soon)
+- **ConnectionStatus** - Connection status indicator (coming soon)
+
+## Pattern Design Principles
+
+### 1. Composability
+Patterns are built from smaller patterns and primitives. They can be composed together to create complex UIs:
+
+```tsx
+<AppShell
+  sidebar={<Navigation />}
+  header={<Header />}
+>
+  <PageContainer>
+    <AsyncSection>
+      <FilterableTable />
+    </AsyncSection>
+  </PageContainer>
+</AppShell>
+```
+
+### 2. Flexibility
+Patterns accept flexible content and callbacks:
+
+```tsx
+<AsyncSection
+  isLoading={isLoading}
+  error={error}
+  isEmpty={isEmpty}
+  loadingContent={<CustomSkeleton />}
+  errorContent={(e) => <CustomError error={e} />}
+>
+  {children}
+</AsyncSection>
+```
+
+### 3. Accessibility
+All patterns follow WCAG 2.1 AA standards with proper ARIA attributes.
+
+### 4. Dark Mode
+All patterns support dark mode through Tailwind's `dark:` prefix.
+
+### 5. Responsive
+All patterns are mobile-first and responsive to viewport changes.
+
+## Usage Examples
+
+### Basic Dashboard
+```tsx
+import { AppShell, PageContainer, FilterableTable, AsyncSection } from '@forge/ui';
+
+export function Dashboard() {
+  return (
+    <AppShell
+      sidebar={<SidebarNav />}
+      header={<Header />}
+    >
+      <PageContainer title="Users">
+        <AsyncSection
+          isLoading={isLoading}
+          error={error}
+          isEmpty={users.length === 0}
+        >
+          <FilterableTable
+            data={users}
+            columns={userColumns}
+            onFilter={handleFilter}
+            onSort={handleSort}
+          />
+        </AsyncSection>
+      </PageContainer>
+    </AppShell>
+  );
+}
+```
+
+### Settings Page
+```tsx
+import { AppShell, PageContainer, SettingsForm } from '@forge/ui';
+
+export function Settings() {
+  return (
+    <AppShell
+      sidebar={<SidebarNav />}
+      header={<Header />}
+    >
+      <PageContainer title="Settings">
+        <SettingsForm
+          fields={settingsFields}
+          onSubmit={handleSave}
+        />
+      </PageContainer>
+    </AppShell>
+  );
+}
+```
+
+## State Management in Patterns
+
+Patterns are **state-agnostic** and work with any state management solution:
+
+- **Props-based**: Pass data and callbacks directly
+- **React Query**: Use with useQuery and useMutation
+- **Zustand**: Integrate with store selectors
+- **Redux**: Use with useSelector and dispatch
+- **Jotai**: Atomic state management
+
+## Testing Patterns
+
+Each pattern includes examples for testing:
+
+- **Unit tests** - Component logic and state handling
+- **Integration tests** - Multiple patterns working together
+- **E2E tests** - Real user workflows
+- **Accessibility tests** - WCAG compliance
+
+See the `testing.mdx` document for detailed testing strategies.
+
+## Contributing New Patterns
+
+To add a new pattern:
+
+1. Identify a recurring UI problem
+2. Create a reusable, flexible solution
+3. Add TypeScript types and documentation
+4. Write Storybook stories with all states
+5. Include accessibility and dark mode support
+6. Add examples and usage documentation
+7. Create tests (unit, integration, e2e)
+8. Document in this overview
+
+## Performance Considerations
+
+- **Code splitting**: Patterns are individually exported for tree-shaking
+- **Bundle size**: Minimal dependencies, ~15KB gzipped total
+- **Virtualization**: Data patterns support large datasets
+- **Lazy loading**: Components load on demand
+- **Memoization**: Internal optimizations prevent unnecessary re-renders
+
+## Accessibility
+
+All patterns follow:
+- **WCAG 2.1 Level AA** - Web Content Accessibility Guidelines
+- **Keyboard navigation** - Full keyboard support
+- **Screen readers** - Proper ARIA labels and descriptions
+- **Focus management** - Visible focus indicators
+- **Color contrast** - WCAG AA compliant ratios
+
+## Next Steps
+
+1. Browse the individual pattern stories
+2. Try the interactive examples
+3. Review the source code in `packages/ui/src/patterns/`
+4. Check the demo apps for real-world usage
+5. Review testing patterns in the QA documentation

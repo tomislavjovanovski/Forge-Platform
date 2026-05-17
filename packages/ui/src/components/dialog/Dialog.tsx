@@ -119,7 +119,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       'aria-labelledby': ariaLabelledby,
       'aria-describedby': ariaDescribedby,
     },
-    ref
+    _ref
   ) => {
     const dialogRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);

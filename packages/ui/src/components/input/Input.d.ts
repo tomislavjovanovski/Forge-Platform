@@ -11,7 +11,7 @@ declare const inputVariants: (props?: ({
     disabled?: boolean | null | undefined;
     fullWidth?: boolean | null | undefined;
 } & import("class-variance-authority/types").ClassProp) | undefined) => string;
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>, VariantProps<typeof inputVariants> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>, VariantProps<typeof inputVariants> {
     /**
      * Icon to display before input
      */

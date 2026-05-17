@@ -29,7 +29,7 @@ const inputVariants = cva(
         lg: 'h-12 text-lg',
       },
 
-      error: {
+      hasError: {
         true: cn(
           'border-red-500 focus-within:ring-red-500',
           'dark:border-red-400',
@@ -47,7 +47,7 @@ const inputVariants = cva(
 
     defaultVariants: {
       size: 'md',
-      error: false,
+      hasError: false,
       disabled: false,
       fullWidth: false,
     },
@@ -56,7 +56,7 @@ const inputVariants = cva(
 
 export interface InputProps
   extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>,
-    VariantProps<typeof inputVariants> {
+    Omit<VariantProps<typeof inputVariants>, 'hasError'> {
   /**
    * Icon to display before input
    */
@@ -111,7 +111,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       className,
       size,
       error,
-      disabled,
+      disabled = false,
       fullWidth,
       icon,
       iconEnd,
@@ -145,7 +145,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
 
         {/* Input wrapper */}
-        <div className={inputVariants({ size, error: !!error, disabled, fullWidth })}>
+        <div className={inputVariants({ size, hasError: !!error, disabled, fullWidth })}>
           {/* Start icon */}
           {icon && <span className="flex items-center justify-center text-slate-500">{icon}</span>}
 
@@ -159,7 +159,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
               'disabled:opacity-50 disabled:cursor-not-allowed',
               className
             )}
-            disabled={disabled}
+            disabled={disabled || false}
             placeholder={placeholder}
             aria-label={label || placeholder}
             aria-invalid={!!error}

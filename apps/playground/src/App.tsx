@@ -1,552 +1,364 @@
+/**
+ * Playground Application
+ * 
+ * A resilience-focused demo showing reusable patterns:
+ * - Websocket/realtime abstraction
+ * - Retry handling with backoff
+ * - Async boundaries and error recovery
+ * - Skeleton loaders
+ * - Optimistic updates
+ * - Connection status tracking
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Area,
-  AreaChart,
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { DashboardSkeleton } from './components/DashboardSkeleton';
-import { TraceWaterfall } from './components/TraceWaterfall';
-import { VirtualizedTable, type VirtualizedColumn } from './components/VirtualizedTable';
-import { WidgetCard } from './components/WidgetCard';
-import {
-  type DeploymentRecord,
-  type ErrorEvent,
-  type PerformanceBudget,
-  type PipelineRun,
-} from './data/observability';
-import { useObservabilityDashboard } from './hooks/useObservabilityDashboard';
+  AppShell,
+  PageContainer,
+  AsyncSection,
+  ThemeSwitcher,
+} from '@forge/ui';
 
-const deploymentTone: Record<DeploymentRecord['status'], string> = {
-  healthy: 'bg-emerald-400/15 text-emerald-300 ring-1 ring-emerald-400/30',
-  monitoring: 'bg-amber-400/15 text-amber-200 ring-1 ring-amber-400/30',
-  rollback: 'bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/30',
-};
+interface ConnectionState {
+  status: 'connecting' | 'connected' | 'disconnected' | 'retrying';
+  retryCount: number;
+  lastError?: string;
+}
 
-const severityTone: Record<ErrorEvent['severity'], string> = {
-  critical: 'bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/30',
-  high: 'bg-orange-400/15 text-orange-200 ring-1 ring-orange-400/30',
-  medium: 'bg-amber-400/15 text-amber-200 ring-1 ring-amber-400/30',
-  low: 'bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-400/30',
-};
-
-const pipelineTone: Record<PipelineRun['status'], string> = {
-  passed: 'bg-emerald-400/15 text-emerald-200 ring-1 ring-emerald-400/30',
-  running: 'bg-cyan-400/15 text-cyan-200 ring-1 ring-cyan-400/30',
-  failed: 'bg-rose-500/15 text-rose-200 ring-1 ring-rose-400/30',
-  queued: 'bg-slate-400/15 text-slate-200 ring-1 ring-slate-300/20',
-};
-
-const socketTone = {
-  connecting: 'bg-cyan-400/15 text-cyan-200 ring-cyan-400/30',
-  live: 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30',
-  retrying: 'bg-amber-400/15 text-amber-200 ring-amber-400/30',
-} as const;
-
-function StatusPill({
-  label,
-  className,
-}: {
+interface MetricData {
+  timestamp: string;
+  value: number;
   label: string;
-  className: string;
-}): React.ReactElement {
-  return (
-    <span
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] ring-1 ${className}`}
-    >
-      <span className="h-2 w-2 rounded-full bg-current opacity-80" />
-      {label}
-    </span>
-  );
 }
 
-function formatBudget(budget: PerformanceBudget): string {
-  if (budget.unit === 'cls') {
-    return budget.current.toFixed(3);
-  }
+export default function Playground() {
+  const [connection, setConnection] = useState<ConnectionState>({
+    status: 'disconnected',
+    retryCount: 0,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [metrics, setMetrics] = useState<MetricData[]>([]);
+  const [activeTab, setActiveTab] = useState<'realtime' | 'resilience' | 'patterns'>('realtime');
 
-  return `${Math.round(budget.current)}`;
-}
+  // Simulate websocket connection with retry logic
+  const connectWebSocket = useCallback(async () => {
+    setConnection({ status: 'connecting', retryCount: connection.retryCount });
 
-function BudgetRow({ budget }: { budget: PerformanceBudget }): React.ReactElement {
-  const ratio = (budget.current / budget.budget) * 100;
-  const overBudget = budget.current > budget.budget;
+    try {
+      // Simulate connection delay
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
-  return (
-    <div className="rounded-[22px] border border-white/8 bg-white/[0.03] p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-white">{budget.name}</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">{budget.owner}</p>
-        </div>
-        <div className="text-right">
-          <p className={`text-sm font-semibold ${overBudget ? 'text-rose-200' : 'text-emerald-200'}`}>
-            {formatBudget(budget)}
-            {budget.unit}
-          </p>
-          <p className="text-xs text-slate-500">
-            budget {budget.budget}
-            {budget.unit}
-          </p>
-        </div>
-      </div>
+      // Randomly fail to demonstrate retry
+      if (Math.random() > 0.7 && connection.retryCount < 2) {
+        throw new Error('Connection failed');
+      }
 
-      <div className="mt-4 h-2 rounded-full bg-white/[0.06]">
-        <div
-          className={`h-full rounded-full ${overBudget ? 'bg-rose-400' : 'bg-cyan-300'}`}
-          style={{ width: `${Math.min(ratio, 100)}%` }}
-        />
-      </div>
+      setConnection({ status: 'connected', retryCount: connection.retryCount });
 
-      <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-        <span>{Math.round(ratio)}% of budget</span>
-        <span>{budget.trend}</span>
-      </div>
-    </div>
-  );
-}
+      // Simulate incoming metrics
+      const newMetrics = Array.from({ length: 5 }, (_, i) => ({
+        timestamp: new Date(Date.now() - (4 - i) * 5000).toLocaleTimeString(),
+        value: Math.floor(Math.random() * 100) + 50,
+        label: `${i + 1}`,
+      }));
+      setMetrics(newMetrics);
+    } catch (error) {
+      if (connection.retryCount < 3) {
+        const backoffDelay = Math.min(1000 * Math.pow(2, connection.retryCount), 10000);
+        setConnection({
+          status: 'retrying',
+          retryCount: connection.retryCount + 1,
+          lastError: (error as Error).message,
+        });
+        setTimeout(() => {
+          connectWebSocket();
+        }, backoffDelay);
+      } else {
+        setConnection({
+          status: 'disconnected',
+          retryCount: connection.retryCount,
+          lastError: 'Max retries exceeded',
+        });
+      }
+    }
+  }, [connection.retryCount]);
 
-const pipelineColumns: VirtualizedColumn<PipelineRun>[] = [
-  {
-    key: 'service',
-    label: 'Service',
-    width: '1.3fr',
-    render: (row) => (
-      <div>
-        <p className="font-medium text-white">{row.service}</p>
-        <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{row.branch}</p>
-      </div>
-    ),
-  },
-  {
-    key: 'status',
-    label: 'Status',
-    width: '0.8fr',
-    render: (row) => <StatusPill label={row.status} className={pipelineTone[row.status]} />,
-  },
-  {
-    key: 'duration',
-    label: 'Duration',
-    width: '0.7fr',
-    align: 'end',
-    render: (row) => `${row.durationMin}m`,
-  },
-  {
-    key: 'coverage',
-    label: 'Coverage',
-    width: '0.8fr',
-    align: 'end',
-    render: (row) => `${row.coverage}%`,
-  },
-  {
-    key: 'commit',
-    label: 'Commit',
-    width: '0.9fr',
-    align: 'end',
-    render: (row) => (
-      <span className="font-mono text-xs uppercase tracking-[0.18em] text-slate-300">
-        {row.commit}
-      </span>
-    ),
-  },
-];
+  // Auto-connect on mount
+  useEffect(() => {
+    connectWebSocket();
+  }, []);
 
-const errorColumns: VirtualizedColumn<ErrorEvent>[] = [
-  {
-    key: 'issue',
-    label: 'Issue',
-    width: '1.5fr',
-    render: (row) => (
-      <div className="min-w-0">
-        <p className="truncate font-medium text-white">{row.issue}</p>
-        <p className="mt-1 text-xs uppercase tracking-[0.16em] text-slate-500">{row.service}</p>
-      </div>
-    ),
-  },
-  {
-    key: 'severity',
-    label: 'Severity',
-    width: '0.85fr',
-    render: (row) => <StatusPill label={row.severity} className={severityTone[row.severity]} />,
-  },
-  {
-    key: 'count',
-    label: 'Count',
-    width: '0.55fr',
-    align: 'end',
-    render: (row) => row.count,
-  },
-  {
-    key: 'users',
-    label: 'Users',
-    width: '0.65fr',
-    align: 'end',
-    render: (row) => row.affectedUsers,
-  },
-  {
-    key: 'seen',
-    label: 'First seen',
-    width: '0.8fr',
-    align: 'end',
-    render: (row) => row.firstSeen,
-  },
-];
+  const handleReconnect = () => {
+    setConnection({ status: 'disconnected', retryCount: 0 });
+    setTimeout(() => connectWebSocket(), 500);
+  };
 
-export default function App(): React.ReactElement {
-  const {
-    snapshot,
-    viewState,
-    isRefreshing,
-    socketState,
-    retryState,
-    lastUpdated,
-    refresh,
-    reconnectNow,
-  } = useObservabilityDashboard();
+  const handleSimulateFailure = () => {
+    setConnection({
+      status: 'retrying',
+      retryCount: 0,
+      lastError: 'Simulated connection loss',
+    });
+    setTimeout(() => connectWebSocket(), 1000);
+  };
 
-  if (viewState === 'loading') {
-    return (
-      <div className="analytics-shell min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1600px]">
-          <DashboardSkeleton />
-        </div>
-      </div>
-    );
-  }
+  const getStatusColor = (status: ConnectionState['status']) => {
+    switch (status) {
+      case 'connected':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'connecting':
+        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
+      case 'retrying':
+        return 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200';
+      case 'disconnected':
+        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
+    }
+  };
 
   return (
-    <div className="analytics-shell min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1600px]">
-        <header className="rounded-[32px] border border-white/10 bg-slate-950/65 p-6 shadow-[0_25px_90px_rgba(15,23,42,0.35)] backdrop-blur">
-          <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
+    <AppShell
+      sidebar={
+        <nav className="space-y-2">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-purple-600 text-white font-bold">
+              🚀
+            </div>
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-cyan-400/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.26em] text-cyan-200 ring-1 ring-cyan-400/20">
-                Forge telemetry fabric
-              </div>
-              <h1
-                data-testid="dashboard-heading"
-                className="mt-5 max-w-4xl text-4xl font-semibold tracking-tight text-white sm:text-5xl"
-              >
-                Observability Command Center
-              </h1>
-              <p
-                data-testid="dashboard-subtitle"
-                className="mt-4 max-w-3xl text-base leading-7 text-slate-300 sm:text-lg"
-              >
-                Realtime metrics, release health, Lighthouse trends, CI throughput, user behavior,
-                and end-to-end traces in one operational view.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-4 py-3">
-                <p className="text-xs uppercase tracking-[0.22em] text-slate-500">Feed</p>
-                <div className="mt-2 flex items-center gap-3">
-                  <StatusPill
-                    label={socketState === 'live' ? 'Live' : socketState === 'retrying' ? 'Retrying' : 'Connecting'}
-                    className={socketTone[socketState]}
-                  />
-                  <span className="text-sm text-slate-300">Last sync {lastUpdated}</span>
-                </div>
-                {socketState === 'retrying' ? (
-                  <p className="mt-2 text-xs text-amber-200">
-                    Retry attempt {retryState.attempt} in {retryState.secondsRemaining}s.
-                  </p>
-                ) : null}
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  type="button"
-                  onClick={refresh}
-                  className="rounded-[20px] border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-sm font-medium text-cyan-100 transition hover:border-cyan-300/40 hover:bg-cyan-300/15"
-                >
-                  {isRefreshing ? 'Refreshing...' : 'Refresh snapshot'}
-                </button>
-                <button
-                  type="button"
-                  onClick={reconnectNow}
-                  className="rounded-[20px] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-white/20 hover:bg-white/[0.08]"
-                >
-                  Retry feed
-                </button>
-              </div>
+              <p className="font-semibold text-slate-900 dark:text-slate-50">Playground</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Resilience Demo</p>
             </div>
           </div>
-        </header>
 
-        <section className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {snapshot.summary.map((metric) => (
-            <div
-              key={metric.id}
-              className="rounded-[28px] border border-white/10 bg-slate-950/65 p-5 backdrop-blur"
+          {[
+            { id: 'realtime', label: 'Realtime' },
+            { id: 'resilience', label: 'Resilience' },
+            { id: 'patterns', label: 'Patterns' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-purple-600 text-white'
+                  : 'text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'
+              }`}
             >
-              <p className="text-xs uppercase tracking-[0.22em] text-slate-500">{metric.label}</p>
-              <div className="mt-4 flex items-end justify-between gap-4">
-                <p className="text-3xl font-semibold text-white">{metric.value}</p>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] ${
-                    metric.tone === 'positive'
-                      ? 'bg-emerald-400/15 text-emerald-200'
-                      : metric.tone === 'warning'
-                        ? 'bg-amber-400/15 text-amber-200'
-                        : 'bg-white/10 text-slate-200'
-                  }`}
-                >
-                  {metric.delta}
-                </span>
-              </div>
-            </div>
+              {tab.label}
+            </button>
           ))}
-        </section>
-
-        <main className="mt-6 grid gap-4 xl:grid-cols-[1.45fr_0.95fr]">
-          <div className="space-y-4">
-            <WidgetCard
-              eyebrow="Realtime metrics"
-              title="Throughput, latency, and error pressure"
-              description="A websocket-simulated stream tracks request pressure, p95 latency, and saturation every few seconds."
-              action={
-                <div className="rounded-full bg-white/[0.03] px-3 py-2 text-xs uppercase tracking-[0.2em] text-slate-400">
-                  auto stream
+        </nav>
+      }
+      header={
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
+            Resilience Patterns
+          </h1>
+          <ThemeSwitcher />
+        </div>
+      }
+    >
+      <PageContainer>
+        {activeTab === 'realtime' && (
+          <div className="space-y-6">
+            <AsyncSection title="Realtime Connection">
+              <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                {/* Connection Status */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-50">
+                      WebSocket Connection
+                    </h3>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                      Real-time data streaming with automatic reconnection
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${getStatusColor(connection.status)}`}
+                    >
+                      <span className={`h-2 w-2 rounded-full ${
+                        connection.status === 'connected' ? 'animate-pulse' : ''
+                      }`} />
+                      {connection.status}
+                    </span>
+                  </div>
                 </div>
-              }
-            >
-              <div data-testid="realtime-metrics-widget" className="h-[320px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={snapshot.realtimeMetrics}>
-                    <defs>
-                      <linearGradient id="latencyGradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="#22d3ee" stopOpacity={0.45} />
-                        <stop offset="100%" stopColor="#22d3ee" stopOpacity={0} />
-                      </linearGradient>
-                      <linearGradient id="throughputGradient" x1="0" x2="0" y1="0" y2="1">
-                        <stop offset="0%" stopColor="#818cf8" stopOpacity={0.35} />
-                        <stop offset="100%" stopColor="#818cf8" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid stroke="rgba(148, 163, 184, 0.12)" vertical={false} />
-                    <XAxis dataKey="label" stroke="#64748b" tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" tickLine={false} axisLine={false} width={44} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 18,
-                        border: '1px solid rgba(148, 163, 184, 0.18)',
-                        background: 'rgba(2, 6, 23, 0.95)',
-                        color: '#e2e8f0',
-                      }}
-                    />
-                    <Legend wrapperStyle={{ color: '#cbd5e1' }} />
-                    <Area
-                      type="monotone"
-                      dataKey="throughput"
-                      stroke="#818cf8"
-                      fill="url(#throughputGradient)"
-                      strokeWidth={2}
-                      name="req/min"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="latency"
-                      stroke="#22d3ee"
-                      fill="url(#latencyGradient)"
-                      strokeWidth={2}
-                      name="latency p95"
-                    />
-                    <Line type="monotone" dataKey="errorRate" stroke="#fb7185" strokeWidth={2} name="error %" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            </WidgetCard>
 
-            <div className="grid gap-4 lg:grid-cols-2">
-              <WidgetCard
-                eyebrow="Lighthouse history"
-                title="Release-over-release quality trend"
-                description="Performance, accessibility, best practices, and SEO remain visible before every rollout."
-              >
-                <div className="h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={snapshot.lighthouseHistory}>
-                      <CartesianGrid stroke="rgba(148, 163, 184, 0.12)" vertical={false} />
-                      <XAxis dataKey="label" stroke="#64748b" tickLine={false} axisLine={false} />
-                      <YAxis domain={[80, 100]} stroke="#64748b" tickLine={false} axisLine={false} width={36} />
-                      <Tooltip
-                        contentStyle={{
-                          borderRadius: 18,
-                          border: '1px solid rgba(148, 163, 184, 0.18)',
-                          background: 'rgba(2, 6, 23, 0.95)',
-                        }}
-                      />
-                      <Legend wrapperStyle={{ color: '#cbd5e1' }} />
-                      <Line type="monotone" dataKey="performance" stroke="#38bdf8" strokeWidth={2.4} dot={false} />
-                      <Line type="monotone" dataKey="accessibility" stroke="#34d399" strokeWidth={2.4} dot={false} />
-                      <Line type="monotone" dataKey="bestPractices" stroke="#f59e0b" strokeWidth={2.4} dot={false} />
-                      <Line type="monotone" dataKey="seo" stroke="#a78bfa" strokeWidth={2.4} dot={false} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </WidgetCard>
+                {/* Retry Info */}
+                {connection.retryCount > 0 && (
+                  <div className="rounded-lg bg-amber-50 p-3 dark:bg-amber-900/20">
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      Retry attempt: {connection.retryCount}/3
+                      {connection.lastError && ` - ${connection.lastError}`}
+                    </p>
+                  </div>
+                )}
 
-              <WidgetCard
-                eyebrow="User analytics"
-                title="Retention and conversion cadence"
-                description="Weekly active and retained users are compared against conversion volume for growth health."
-              >
-                <div className="h-[280px]">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={snapshot.userAnalytics}>
-                      <CartesianGrid stroke="rgba(148, 163, 184, 0.12)" vertical={false} />
-                      <XAxis dataKey="label" stroke="#64748b" tickLine={false} axisLine={false} />
-                      <YAxis yAxisId="users" stroke="#64748b" tickLine={false} axisLine={false} width={42} />
-                      <YAxis yAxisId="conversions" orientation="right" stroke="#64748b" tickLine={false} axisLine={false} width={42} />
-                      <Tooltip
-                        contentStyle={{
-                          borderRadius: 18,
-                          border: '1px solid rgba(148, 163, 184, 0.18)',
-                          background: 'rgba(2, 6, 23, 0.95)',
-                        }}
-                      />
-                      <Legend wrapperStyle={{ color: '#cbd5e1' }} />
-                      <Bar yAxisId="users" dataKey="activeUsers" radius={[10, 10, 0, 0]} fill="#22d3ee" />
-                      <Bar yAxisId="users" dataKey="retainedUsers" radius={[10, 10, 0, 0]} fill="#14b8a6" />
-                      <Line yAxisId="conversions" type="monotone" dataKey="conversions" stroke="#f97316" strokeWidth={2.4} dot={false} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </WidgetCard>
-            </div>
+                {/* Metrics */}
+                {metrics.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="mb-3 font-medium text-slate-900 dark:text-slate-50">
+                      Streaming Metrics
+                    </h4>
+                    <div className="space-y-2">
+                      {metrics.map((m, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                          <span className="w-12 text-xs text-slate-500 dark:text-slate-400">
+                            {m.timestamp}
+                          </span>
+                          <div className="flex-1">
+                            <div className="h-2 rounded-full bg-slate-200 dark:bg-slate-700" style={{ width: '100%' }}>
+                              <div
+                                className="h-full rounded-full bg-purple-600"
+                                style={{ width: `${(m.value / 150) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          <span className="w-12 text-right text-xs font-medium text-slate-900 dark:text-slate-50">
+                            {m.value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            <WidgetCard
-              eyebrow="Tracing visualization"
-              title="Critical path waterfall"
-              description="Trace timing reveals the services stretching the request path and where error states are surfacing."
-            >
-              <TraceWaterfall spans={snapshot.traceSpans} />
-            </WidgetCard>
-          </div>
-
-          <div className="space-y-4">
-            <WidgetCard
-              eyebrow="Deployment monitoring"
-              title="Release train status"
-              description="Track active canaries, rollback pressure, and region-by-region health without leaving the dashboard."
-            >
-              <div className="space-y-3">
-                {snapshot.deployments.map((deployment) => (
-                  <div
-                    key={deployment.id}
-                    className="rounded-[24px] border border-white/8 bg-white/[0.03] p-4"
+                {/* Actions */}
+                <div className="flex gap-3 pt-4">
+                  <button
+                    onClick={handleSimulateFailure}
+                    className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-50 dark:hover:bg-slate-700"
                   >
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-base font-medium text-white">
-                          {deployment.service} <span className="text-slate-500">{deployment.version}</span>
-                        </p>
-                        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-slate-500">
-                          {deployment.region} region · {deployment.startedAt}
-                        </p>
-                      </div>
-                      <StatusPill
-                        label={deployment.status}
-                        className={deploymentTone[deployment.status]}
-                      />
-                    </div>
-                    <div className="mt-4 h-2 rounded-full bg-white/[0.06]">
-                      <div
-                        className={`h-full rounded-full ${
-                          deployment.status === 'rollback'
-                            ? 'bg-rose-400'
-                            : deployment.status === 'monitoring'
-                              ? 'bg-amber-300'
-                              : 'bg-emerald-400'
-                        }`}
-                        style={{ width: `${deployment.canaryPercent}%` }}
-                      />
-                    </div>
-                    <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                      <span>Canary {deployment.canaryPercent}%</span>
-                      <span>{deployment.incidents} incident(s)</span>
-                    </div>
+                    Simulate Failure
+                  </button>
+                  <button
+                    onClick={handleReconnect}
+                    className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-medium text-white hover:bg-purple-700"
+                  >
+                    Reconnect
+                  </button>
+                </div>
+              </div>
+            </AsyncSection>
+          </div>
+        )}
+
+        {activeTab === 'resilience' && (
+          <div className="space-y-6">
+            <AsyncSection title="Resilience Patterns">
+              <div className="grid gap-4 md:grid-cols-2">
+                {/* Retry with Backoff */}
+                <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-50">
+                    Exponential Backoff
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                    Automatically retry failed requests with exponential backoff delays:
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                    <li>• Attempt 1: immediate</li>
+                    <li>• Attempt 2: 1 second</li>
+                    <li>• Attempt 3: 2 seconds</li>
+                    <li>• Attempt 4: 4 seconds</li>
+                    <li>• Max: 10 seconds (capped)</li>
+                  </ul>
+                </div>
+
+                {/* Optimistic Updates */}
+                <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-50">
+                    Optimistic Updates
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                    Update UI immediately, then sync with server:
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                    <li>• Instant feedback to users</li>
+                    <li>• Rollback on server error</li>
+                    <li>• Conflict resolution</li>
+                    <li>• Reduced latency perception</li>
+                  </ul>
+                </div>
+
+                {/* Circuit Breaker */}
+                <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-50">
+                    Circuit Breaker
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                    Prevent cascading failures in distributed systems:
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                    <li>• Fail fast on repeated errors</li>
+                    <li>• Open/Closed/Half-open states</li>
+                    <li>• Reduce backend load</li>
+                    <li>• Self-healing capability</li>
+                  </ul>
+                </div>
+
+                {/* Error Boundaries */}
+                <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-50">
+                    Error Boundaries
+                  </h3>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                    Isolate component failures and graceful degradation:
+                  </p>
+                  <ul className="mt-3 space-y-1 text-xs text-slate-600 dark:text-slate-400">
+                    <li>• Catch render errors</li>
+                    <li>• Show fallback UI</li>
+                    <li>• Log error details</li>
+                    <li>• Prevent white screen</li>
+                  </ul>
+                </div>
+              </div>
+            </AsyncSection>
+          </div>
+        )}
+
+        {activeTab === 'patterns' && (
+          <div className="space-y-6">
+            <AsyncSection title="Frontend Architecture Patterns">
+              <div className="space-y-4">
+                {[
+                  {
+                    name: 'Async Boundaries',
+                    description: 'Suspend rendering at async boundaries with proper error and loading states',
+                  },
+                  {
+                    name: 'Skeleton Loaders',
+                    description: 'Show placeholder content while data is loading to reduce perceived latency',
+                  },
+                  {
+                    name: 'State Synchronization',
+                    description: 'Keep client and server state in sync with conflict detection',
+                  },
+                  {
+                    name: 'Request Deduplication',
+                    description: 'Batch multiple requests for the same resource',
+                  },
+                  {
+                    name: 'Cache Strategies',
+                    description: 'Implement stale-while-revalidate and cache-first patterns',
+                  },
+                  {
+                    name: 'Mutation Queuing',
+                    description: 'Queue mutations during offline and process when connection resumes',
+                  },
+                ].map((pattern, idx) => (
+                  <div key={idx} className="rounded-lg border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                    <h4 className="font-semibold text-slate-900 dark:text-slate-50">
+                      {pattern.name}
+                    </h4>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                      {pattern.description}
+                    </p>
                   </div>
                 ))}
               </div>
-            </WidgetCard>
-
-            <WidgetCard
-              eyebrow="CI pipeline history"
-              title="Build reliability and queue pressure"
-              description="Recent runs are virtualized for scale while the chart highlights pass, fail, and queue distribution."
-            >
-              <div className="h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={[
-                      { name: 'Passed', count: snapshot.pipelines.filter((run) => run.status === 'passed').length },
-                      { name: 'Running', count: snapshot.pipelines.filter((run) => run.status === 'running').length },
-                      { name: 'Queued', count: snapshot.pipelines.filter((run) => run.status === 'queued').length },
-                      { name: 'Failed', count: snapshot.pipelines.filter((run) => run.status === 'failed').length },
-                    ]}
-                  >
-                    <CartesianGrid stroke="rgba(148, 163, 184, 0.12)" vertical={false} />
-                    <XAxis dataKey="name" stroke="#64748b" tickLine={false} axisLine={false} />
-                    <YAxis stroke="#64748b" tickLine={false} axisLine={false} width={32} />
-                    <Tooltip
-                      contentStyle={{
-                        borderRadius: 18,
-                        border: '1px solid rgba(148, 163, 184, 0.18)',
-                        background: 'rgba(2, 6, 23, 0.95)',
-                      }}
-                    />
-                    <Bar dataKey="count" radius={[12, 12, 0, 0]} fill="#38bdf8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="mt-5">
-                <VirtualizedTable
-                  columns={pipelineColumns}
-                  rows={snapshot.pipelines}
-                  emptyLabel="No pipeline runs in range."
-                />
-              </div>
-            </WidgetCard>
-
-            <WidgetCard
-              eyebrow="Error tracking"
-              title="Regressions and user impact"
-              description="Open issues are prioritized by severity and user blast radius with room for much larger datasets."
-            >
-              <div data-testid="error-tracking-widget">
-                <VirtualizedTable
-                  columns={errorColumns}
-                  rows={snapshot.errors}
-                  emptyLabel="No active errors."
-                />
-              </div>
-            </WidgetCard>
-
-            <WidgetCard
-              eyebrow="Performance budgets"
-              title="Budget adherence"
-              description="Watch budgets drift before they become release blockers."
-            >
-              <div className="space-y-3">
-                {snapshot.budgets.map((budget) => (
-                  <BudgetRow key={budget.id} budget={budget} />
-                ))}
-              </div>
-            </WidgetCard>
+            </AsyncSection>
           </div>
-        </main>
-      </div>
-    </div>
+        )}
+      </PageContainer>
+    </AppShell>
   );
 }

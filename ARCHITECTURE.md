@@ -1,53 +1,562 @@
-# Architecture Decisions & Rationale
+# Frontend Platform Engineering Architecture
 
-## High-Level Architecture
+forge-platform is a **frontend platform engineering system** - a monorepo that prioritizes **reusable patterns, strong architecture, and developer experience** over business domain complexity.
 
-forge-platform follows a **modular monorepo architecture** with clear separation between:
+## Design Philosophy
 
-1. **Applications** - End-user facing products
-2. **Shared Packages** - Reusable utilities and infrastructure
-3. **Tooling** - Build, lint, and development utilities
+### What We Build
 
-This architecture enables:
-- Rapid feature development with code sharing
-- Independent app scaling and deployment
-- Shared quality standards across all products
-- Clear ownership and responsibility boundaries
+✅ **Reusable patterns** - AppShell, FilterableTable, AsyncSection, etc.
+✅ **Storybook documentation** - Interactive pattern showcase
+✅ **QA infrastructure** - Testing utilities, fixtures, helpers
+✅ **Architecture examples** - Thin apps demonstrating pattern composition
+✅ **Developer experience** - Strong typing, clear boundaries, comprehensive docs
 
-## Key Design Decisions
+### What We Don't Build
 
-### 1. Monorepo vs. Multi-Repo
+❌ **Complex business logic** - RBAC systems, audit logs, notification centers
+❌ **Fake SaaS features** - CRM workflows, complex domain models
+❌ **Enterprise workflows** - Multi-tenant systems, approval chains
+❌ **Heavy domain modeling** - This is NOT a business application
 
-**Decision**: Single monorepo using pnpm workspaces + Turborepo
+## Core Architecture
+
+### 1. Pattern-First Development
+
+Unlike component libraries, forge-platform is **pattern-first**:
+
+```
+Primitive Components (Button, Input, Dialog)
+    ↓
+    ├─ Patterns (AppShell, FilterableTable, AsyncSection)
+    │   ├─ Layout Patterns (Sidebar, Header composition)
+    │   ├─ Data Patterns (Tables, Grids, Lists)
+    │   ├─ Async Patterns (Loading, Error, Empty states)
+    │   ├─ Form Patterns (Settings forms, Validation)
+    │   └─ UX Patterns (Theme switcher, Command palette)
+    ↓
+Integration Apps (Dashboard, Playground)
+    ├─ Pattern composition examples
+    ├─ Real-world usage demonstrations
+    └─ Minimal custom code
+```
 
 **Rationale**:
-- **Code Sharing**: Common UI components, utilities, and services benefit all apps
-- **Dependency Consistency**: Single lock file prevents version conflicts
-- **Simplified Development**: One `pnpm install`, one build pipeline
-- **Easier Refactoring**: Large-scale changes across packages are simpler
-- **Type Safety**: TypeScript project references enable strict cross-package typing
+- Patterns solve recurring problems, not just styled components
+- Composable solutions scale to complex UIs
+- Patterns can be documented and tested comprehensively
+- Clear value proposition for other teams
+- Easier to maintain than many individual components
 
-**Trade-offs**:
-- Monorepo adds complexity vs. single app
-- All packages in one repository (mitigated by clear boundaries)
-- Shared CI/CD pipeline (partially mitigated by task filtering)
+### 2. Storybook as the Primary Product
 
-### 2. Package Boundaries Strategy
+Storybook is not an afterthought - it's the **primary way to use forge-platform**:
 
-**Decision**: Four types of packages with explicit responsibilities
+```
+User Workflow:
+1. Open Storybook
+2. Find pattern that matches their needs
+3. Review interactive examples and states
+4. Copy pattern into their app
+5. Import from @forge/ui
+```
 
-**Types**:
-1. **Applications** (apps/) - Complete, deployable products
-2. **Platform Packages** (packages/) - Reusable domain logic
-3. **Infrastructure** (packages/) - Build/lint configuration
-4. **Testing** (packages/) - QA utilities and fixtures
+**Each pattern story includes**:
+- Default state
+- All state variations (loading, error, empty, success)
+- Dark mode example
+- Responsive behavior
+- Accessibility notes
+- Interaction examples
+- Code snippets for copy-paste
 
-**Rationale**:
-- Clear ownership prevents ownership ambiguity
-- Reduces coupling between unrelated domains
-- Enables independent versioning and deployment
-- Facilitates team scaling (teams own packages)
-- Reduces merge conflicts
+### 3. Thin Integration Apps
+
+The apps (`dashboard`, `playground`) are **minimal demos**, not full products:
+
+- **dashboard** (500 LOC) - Shows AppShell, FilterableTable, SettingsForm
+- **playground** (400 LOC) - Shows resilience patterns and async handling
+- **storybook** - Comprehensive pattern documentation
+
+**Why minimal?**
+- Demonstrates pattern composition without noise
+- Easy to understand and modify
+- Focuses on architecture, not business logic
+- Serves as reference implementation
+- Low maintenance burden
+
+### 4. Testing as Infrastructure
+
+`packages/testing` provides reusable QA infrastructure:
+
+```
+@forge/testing/
+├── fixtures/         - Playwright fixtures for common scenarios
+├── handlers/         - MSW handlers for API mocking
+├── factories/        - Mock data generators
+├── accessibility/    - A11y testing helpers
+└── utilities/        - Common test assertions
+```
+
+Used by:
+- Component tests in `packages/ui`
+- App tests in `apps/*/`
+- E2E tests in Playwright
+
+**Philosophy**: Testing patterns are as important as UI patterns.
+
+## Package Structure
+
+### `packages/ui/` - Pattern Library
+
+```
+packages/ui/
+├── src/
+│   ├── patterns/
+│   │   ├── layouts/      # AppShell, PageContainer
+│   │   ├── async/        # AsyncSection, error boundaries
+│   │   ├── data/         # FilterableTable, MetricGrid
+│   │   ├── forms/        # SettingsForm, ValidationSummary
+│   │   └── ux/           # ThemeSwitcher, CommandPalette
+│   ├── components/       # Primitives: Button, Input, Dialog
+│   ├── hooks/            # useDialog, custom hooks
+│   ├── tokens/           # Design tokens (spacing, colors)
+│   └── utils/            # cn(), utility functions
+├── tsconfig.json
+├── package.json
+└── vite.config.ts        # For building components
+```
+
+**Export Structure**:
+```tsx
+// Patterns
+import { AppShell, FilterableTable, AsyncSection } from '@forge/ui';
+
+// Primitives
+import { Button, Input, Dialog } from '@forge/ui';
+
+// Types
+import type { Column, FormField } from '@forge/ui';
+
+// Utilities
+import { cn } from '@forge/ui';
+```
+
+### `packages/testing/` - QA Infrastructure
+
+```
+packages/testing/
+├── src/
+│   ├── fixtures/
+│   │   └── playwright.ts  # App fixtures for E2E
+│   ├── handlers/
+│   │   ├── auth.ts        # MSW auth handlers
+│   │   ├── users.ts       # MSW user handlers
+│   │   └── server.ts      # MSW server setup
+│   ├── factories/
+│   │   ├── user.ts        # User factory
+│   │   ├── role.ts        # Role factory
+│   │   └── index.ts       # All factories
+│   ├── accessibility/
+│   │   ├── audit.ts       # a11y audit helpers
+│   │   └── rules.ts       # Custom a11y rules
+│   ├── utilities/
+│   │   ├── assertions.ts  # Custom assertions
+│   │   └── helpers.ts     # Test helpers
+│   └── index.ts           # Main exports
+└── package.json
+```
+
+**Usage Examples**:
+
+```tsx
+// E2E test
+import { test, expect } from '@playwright/test';
+import { setupTestApp } from '@forge/testing/fixtures';
+
+test('filter users', async ({ page }) => {
+  await setupTestApp(page, { users: [...] });
+  // Test code...
+});
+
+// Unit test with mocked data
+import { userFactory } from '@forge/testing/factories';
+
+test('renders user name', () => {
+  const user = userFactory.build({ name: 'Alice' });
+  render(<UserCard user={user} />);
+  expect(screen.getByText('Alice')).toBeInTheDocument();
+});
+```
+
+### `apps/dashboard/` - Pattern Showcase
+
+```
+apps/dashboard/
+├── src/
+│   ├── App.tsx             # Main app (~200 LOC)
+│   ├── main.tsx            # Entry point
+│   ├── index.css            # Tailwind styles
+│   └── vite.config.ts
+└── package.json
+```
+
+**What it demonstrates**:
+- AppShell layout pattern
+- FilterableTable data pattern
+- SettingsForm form pattern
+- AsyncSection state pattern
+- ThemeSwitcher UX pattern
+- Responsive behavior
+- Dark mode
+
+**Code ratio**:
+- 80% pattern usage (`@forge/ui`)
+- 20% custom composition
+- No business logic
+
+### `apps/playground/` - Resilience Patterns
+
+```
+apps/playground/
+├── src/
+│   ├── App.tsx             # Main app (~300 LOC)
+│   ├── main.tsx
+│   ├── index.css
+│   └── vite.config.ts
+└── package.json
+```
+
+**What it demonstrates**:
+- WebSocket/realtime patterns
+- Retry with exponential backoff
+- Async boundary handling
+- Skeleton loaders
+- Optimistic updates
+- Connection status tracking
+- Error recovery
+
+### `apps/storybook/` - Pattern Documentation
+
+```
+apps/storybook/
+├── stories/
+│   ├── patterns-overview.mdx     # Pattern guide
+│   ├── appshell.stories.tsx      # AppShell story
+│   ├── filterabletable.stories.tsx  # Table story
+│   ├── settingsform.stories.tsx  # Form story
+│   ├── asyncsection.stories.tsx  # Async story
+│   ├── themeswitcher.stories.tsx # UX story
+│   └── ...other stories
+├── .storybook/
+│   ├── main.ts                   # Storybook config
+│   └── preview.ts                # Global decorators
+└── package.json
+```
+
+**Features**:
+- 30+ interactive stories
+- Accessibility audit
+- Dark mode showcase
+- Responsive preview
+- Code snippets
+- Interaction tests
+
+## Design Principles
+
+### 1. Composition Over Inheritance
+
+Patterns are built from smaller patterns and primitives:
+
+```tsx
+// ✅ Good: Composable patterns
+<AppShell
+  sidebar={<Sidebar />}
+  header={<Header />}
+>
+  <PageContainer title="Users">
+    <AsyncSection isLoading={loading} error={error}>
+      <FilterableTable data={users} columns={columns} />
+    </AsyncSection>
+  </PageContainer>
+</AppShell>
+
+// ❌ Bad: Monolithic component
+<SuperDashboard
+  users={users}
+  isLoading={loading}
+  error={error}
+  showSidebar={true}
+  sidebarContent={sidebar}
+  // ...30 more props
+/>
+```
+
+### 2. Props Over Config Objects
+
+Patterns accept flexible props, not large config objects:
+
+```tsx
+// ✅ Good: Clear, type-safe props
+<FilterableTable
+  data={users}
+  columns={columns}
+  onFilter={handleFilter}
+  onSort={handleSort}
+  showRowNumbers
+/>
+
+// ❌ Bad: Hidden config
+<Table
+  config={{
+    data: users,
+    columns,
+    handlers: { filter, sort },
+    options: { showRowNumbers: true }
+  }}
+/>
+```
+
+### 3. Accessibility First
+
+All patterns follow WCAG 2.1 Level AA:
+- Keyboard navigation
+- Proper ARIA labels
+- Focus management
+- Color contrast
+- Screen reader support
+
+### 4. Dark Mode Support
+
+All patterns support dark mode via Tailwind's `dark:` prefix:
+
+```tsx
+// ✅ All patterns support dark mode
+<div className="bg-white dark:bg-slate-900">
+  <span className="text-slate-900 dark:text-slate-50">Text</span>
+</div>
+```
+
+### 5. Responsive Design
+
+Mobile-first approach:
+
+```tsx
+// ✅ Mobile-first responsive
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+  {/* Single column on mobile, 2 on tablet, 3 on desktop */}
+</div>
+```
+
+## Data Flow in Patterns
+
+### Props-Based (Recommended)
+
+```tsx
+function MyComponent() {
+  const [data, setData] = useState([]);
+
+  return (
+    <FilterableTable
+      data={data}
+      columns={columns}
+      onFilter={handleFilter}
+    />
+  );
+}
+```
+
+**Advantages**:
+- Simple and predictable
+- Works with any state management
+- Easy to test
+- Clear data flow
+
+### With React Query
+
+```tsx
+function MyComponent() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
+  return (
+    <AsyncSection isLoading={isLoading} error={error}>
+      <FilterableTable data={data} columns={columns} />
+    </AsyncSection>
+  );
+}
+```
+
+### With Zustand
+
+```tsx
+function MyComponent() {
+  const { users, loading } = useStore((s) => ({
+    users: s.users,
+    loading: s.loading,
+  }));
+
+  return (
+    <AsyncSection isLoading={loading}>
+      <FilterableTable data={users} columns={columns} />
+    </AsyncSection>
+  );
+}
+```
+
+All approaches work seamlessly with patterns.
+
+## Testing Strategy
+
+### Unit Tests (Vitest)
+Test individual patterns in isolation:
+
+```tsx
+test('FilterableTable filters data', () => {
+  render(
+    <FilterableTable
+      data={mockUsers}
+      columns={columns}
+      onFilter={handleFilter}
+    />
+  );
+  // Assert behavior
+});
+```
+
+### Integration Tests (Vitest)
+Test pattern composition:
+
+```tsx
+test('AppShell with FilterableTable', () => {
+  render(
+    <AppShell sidebar={<Nav />} header={<Header />}>
+      <FilterableTable data={users} columns={columns} />
+    </AppShell>
+  );
+  // Assert interaction
+});
+```
+
+### E2E Tests (Playwright)
+Test real user workflows with fixtures:
+
+```tsx
+test('filter and sort users', async ({ appPage }) => {
+  await appPage.goto('/users');
+  await appPage.filterTable('Alice');
+  await appPage.sortByColumn('name');
+  // Assert final state
+});
+```
+
+### Accessibility Tests
+Built into Storybook stories and E2E tests:
+
+```tsx
+test('AsyncSection is accessible', async () => {
+  const { container } = render(<AsyncSection />);
+  const results = await axe(container);
+  expect(results).toHaveNoViolations();
+});
+```
+
+## Performance Considerations
+
+### Code Splitting
+Patterns are exported individually for tree-shaking:
+
+```tsx
+// ✅ Only imports AppShell
+import { AppShell } from '@forge/ui';
+
+// ❌ Would import entire library
+import * as UI from '@forge/ui';
+```
+
+### Bundle Size
+Target: <15KB gzipped for entire pattern library
+
+```
+AppShell: 2.5KB
+FilterableTable: 3.2KB
+SettingsForm: 2.8KB
+AsyncSection: 1.5KB
+ThemeSwitcher: 1.2KB
+Other patterns: 3.8KB
+Total: ~15KB gzipped
+```
+
+### Virtualization
+Data patterns support virtualization for large datasets:
+
+```tsx
+<VirtualizedTable
+  data={1000000} // 1M rows
+  columns={columns}
+  rowHeight={40}
+  visibleRows={20}
+/>
+```
+
+## CI/CD & Deployment
+
+### Build Pipeline (Turborepo)
+```bash
+$ pnpm build
+→ @forge/ui builds (tsc)
+→ @forge/testing builds (tsc)
+→ Apps build (vite)
+→ Storybook builds (sb build)
+```
+
+### Test Pipeline
+```bash
+$ pnpm test
+→ Unit tests (vitest)
+
+$ pnpm test:e2e
+→ E2E tests (playwright)
+```
+
+### Linting & Type Checking
+```bash
+$ pnpm lint
+→ ESLint with shared config
+
+$ pnpm type-check
+→ TypeScript strict mode
+```
+
+## Future Roadmap
+
+### Phase 1 (Current)
+- ✅ Core patterns (AppShell, Table, Form, AsyncSection)
+- ✅ Storybook documentation
+- ✅ Basic QA infrastructure
+- ✅ Two demo apps
+
+### Phase 2
+- 🔄 Advanced data patterns (MetricGrid, VirtualizedList)
+- 🔄 Advanced form patterns (MultiStep, DynamicFields)
+- 🔄 Advanced async patterns (RetryBoundary, SuspenseBoundary)
+- 🔄 Expanded testing helpers
+
+### Phase 3
+- ⏳ Real-time patterns (RealtimePanel, StreamingData)
+- ⏳ More UX patterns (CommandPalette, SearchUI)
+- ⏳ Analytics integration examples
+- ⏳ Monitoring integration examples
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for:
+- Adding new patterns
+- Writing tests
+- Updating documentation
+- Code review process
 
 **Boundaries Enforced by**:
 - TypeScript project references (strict imports)
