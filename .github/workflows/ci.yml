@@ -19,21 +19,28 @@ jobs:
           echo "PATH=$PATH"
           which tar || true
           tar --version || true
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
@@ -49,21 +56,28 @@ jobs:
     needs: [lint]
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
@@ -85,21 +99,28 @@ jobs:
       matrix:
         app: [dashboard, playground]
     steps:
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
@@ -126,21 +147,28 @@ jobs:
             port: 4174
         browser: [chromium, firefox, webkit]
     steps:
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
@@ -162,21 +190,28 @@ jobs:
     needs: [unit-tests]
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
@@ -191,21 +226,28 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
-      - name: Ensure tar is installed
-        if: runner.os == 'Linux'
+      - name: Determine checkout method
+        id: checkout-method
         run: |
-          if ! command -v tar >/dev/null 2>&1; then
-            if command -v apt-get >/dev/null 2>&1; then
-              sudo apt-get update
-              sudo apt-get install -y tar
-            elif command -v apk >/dev/null 2>&1; then
-              sudo apk add --no-cache tar
-            else
-              echo "No supported package manager found to install tar."
-              exit 1
-            fi
+          if command -v tar >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v git >/dev/null 2>&1; then
+            echo "checkout_method=git" >> $GITHUB_OUTPUT
+          else
+            echo "No tar or git available to checkout repository."
+            exit 1
           fi
       - uses: actions/checkout@v4
+        if: steps.checkout-method.outputs.checkout_method == 'actions'
+      - name: Fallback checkout with git
+        if: steps.checkout-method.outputs.checkout_method == 'git'
+        run: |
+          git config --global --add safe.directory /github/workspace
+          rm -rf *
+          git init
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git fetch --depth=1 origin "${{ github.ref_name }}"
+          git checkout FETCH_HEAD
       - uses: pnpm/action-setup@v2
         with:
           version: 9.0.0
