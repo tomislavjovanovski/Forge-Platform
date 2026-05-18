@@ -14,6 +14,11 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug tar availability
+        run: |
+          echo "PATH=$PATH"
+          which tar || true
+          tar --version || true
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
