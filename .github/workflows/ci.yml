@@ -24,7 +24,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
@@ -49,18 +50,11 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Unit Tests with Coverage
         run: pnpm test:coverage
-
-      - name: Upload Coverage
-        uses: codecov/codecov-action@v3
-        with:
-          files: |
-            ./apps/**/coverage/coverage-final.json
-            ./packages/**/coverage/coverage-final.json
-          fail_ci_if_error: true
 
   build:
     needs: unit-tests
@@ -83,7 +77,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build ${{ matrix.app }}
         run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
@@ -124,7 +119,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build App
         run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
@@ -172,7 +168,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run Accessibility Tests
         run: pnpm test:accessibility
@@ -194,7 +191,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - run: pnpm install --frozen-lockfile
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build Dashboard
         run: pnpm turbo run build --filter=@forge/dashboard
