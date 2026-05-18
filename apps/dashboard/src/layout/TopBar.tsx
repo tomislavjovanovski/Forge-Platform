@@ -7,7 +7,7 @@ interface TopBarProps {
   onOpenNotifications: () => void;
 }
 
-export function TopBar({ unreadCount, onOpenNotifications }: TopBarProps) {
+export function TopBar({ unreadCount, onOpenNotifications }: TopBarProps): JSX.Element {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme.mode);
 

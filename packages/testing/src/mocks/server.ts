@@ -1,10 +1,10 @@
+import { setupServer } from 'msw/node';
 import type { RequestHandler } from 'msw';
 import type { SetupServerApi } from 'msw/node';
 
 let server: SetupServerApi | null = null;
 
 export function setupTestServer(handlers: RequestHandler[] = []): SetupServerApi {
-  const { setupServer } = require('msw/node') as typeof import('msw/node');
   server = setupServer(...handlers);
   return server;
 }

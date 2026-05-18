@@ -1,4 +1,5 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 import { Sentry } from './sentry';
 
 interface ErrorBoundaryProps {
@@ -20,7 +21,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     if (typeof window !== 'undefined') {
       Sentry.captureException(error, {
         extra: {
@@ -30,7 +31,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
   }
 
-  render() {
+  render(): ReactNode {
     if (this.state.hasError) {
       return this.props.fallback ?? (
         <div role="alert" className="p-6 bg-red-50 text-red-900">

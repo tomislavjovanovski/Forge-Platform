@@ -17,9 +17,9 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       token: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      setToken: (token) => set({ token }),
-      logout: () => set({ user: null, token: null, isAuthenticated: false }),
+      setUser: (user): void => set({ user, isAuthenticated: !!user }),
+      setToken: (token): void => set({ token }),
+      logout: (): void => set({ user: null, token: null, isAuthenticated: false }),
     }),
     {
       name: 'forge-auth-store',

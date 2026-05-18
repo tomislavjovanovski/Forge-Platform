@@ -25,7 +25,7 @@ module.exports = {
   rules: {
     'react/react-in-jsx-scope': 'off',
     'react/prop-types': 'off',
-    '@typescript-eslint/explicit-function-return-types': 'error',
+    '@typescript-eslint/explicit-function-return-type': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'error',
     '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/no-unused-vars': [

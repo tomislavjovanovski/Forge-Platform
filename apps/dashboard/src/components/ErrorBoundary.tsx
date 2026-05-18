@@ -12,15 +12,15 @@ interface ErrorBoundaryState {
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   override state = { hasError: false };
 
-  static getDerivedStateFromError() {
+  static getDerivedStateFromError(): ErrorBoundaryState {
     return { hasError: true };
   }
 
-  override componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo): void {
     console.error('Dashboard error boundary caught:', error, info);
   }
 
-  override render() {
+  override render(): ReactNode {
     if (this.state.hasError) {
       return (
         <div className="rounded-3xl border border-red-700 bg-red-950/80 p-8 text-slate-100 shadow-xl">

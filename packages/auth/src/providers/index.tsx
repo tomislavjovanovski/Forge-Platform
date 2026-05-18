@@ -1,3 +1,3 @@
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
   return <>{children}</>;
 };

@@ -77,11 +77,11 @@ const SETTINGS_FIELDS: FormField[] = [
   },
 ];
 
-export default function App() {
+export default function App(): JSX.Element {
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 
-  const handleFilterUsers = (data: UserData[], query: string) => {
+  const handleFilterUsers = (data: UserData[], query: string): UserData[] => {
     return data.filter(
       (user) =>
         user.name.toLowerCase().includes(query.toLowerCase()) ||
@@ -93,7 +93,7 @@ export default function App() {
     data: UserData[],
     columnId: string,
     direction: 'asc' | 'desc',
-  ) => {
+  ): UserData[] => {
     const sorted = [...data].sort((a, b) => {
       const aVal = a[columnId as keyof UserData];
       const bVal = b[columnId as keyof UserData];
@@ -108,19 +108,19 @@ export default function App() {
     {
       id: 'name',
       header: 'Name',
-      accessor: (row) => row.name,
+      accessor: (row: UserData) => row.name,
       sortable: true,
     },
     {
       id: 'email',
       header: 'Email',
-      accessor: (row) => row.email,
+      accessor: (row: UserData) => row.email,
       sortable: true,
     },
     {
       id: 'role',
       header: 'Role',
-      accessor: (row) => (
+      accessor: (row: UserData) => (
         <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
           {row.role}
         </span>
@@ -130,7 +130,7 @@ export default function App() {
     {
       id: 'status',
       header: 'Status',
-      accessor: (row) => (
+      accessor: (row: UserData) => (
         <span
           className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
             row.status === 'Active'
@@ -145,10 +145,10 @@ export default function App() {
     },
   ];
 
-  const handleSettingsSubmit = async (data: Record<string, any>) => {
+  const handleSettingsSubmit = async (data: Record<string, unknown>): Promise<void> => {
     setIsSavingSettings(true);
     // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise<void>((resolve) => setTimeout(resolve, 1000));
     console.log('Settings saved:', data);
     setIsSavingSettings(false);
   };

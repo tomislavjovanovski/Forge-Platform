@@ -7,7 +7,7 @@ const statusStyles = {
   critical: 'bg-rose-500/10 text-rose-300',
 } as const;
 
-export function MonitoringWidgets() {
+export function MonitoringWidgets(): JSX.Element {
   const { data, isLoading } = useGetMetricsQuery();
 
   if (isLoading) {

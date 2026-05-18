@@ -4,7 +4,7 @@ interface CommandPaletteProps {
   onToggleTheme: () => void;
 }
 
-export function CommandPalette({ onToggleTheme }: CommandPaletteProps) {
+export function CommandPalette({ onToggleTheme }: CommandPaletteProps): JSX.Element {
   const commands = [
     { id: 'c-01', label: 'Open audit log', action: () => window.alert('Navigate to audit log') },
     { id: 'c-02', label: 'View monitoring panel', action: () => window.alert('Navigate to monitoring') },
@@ -19,7 +19,7 @@ export function CommandPalette({ onToggleTheme }: CommandPaletteProps) {
   );
 
   useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
+    const onKeyDown = (event: KeyboardEvent): void => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setOpen((current) => !current);

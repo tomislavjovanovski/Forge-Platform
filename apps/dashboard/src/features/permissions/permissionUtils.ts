@@ -8,7 +8,7 @@ export const permissionMap = {
 export type UserRole = keyof typeof permissionMap;
 export type Permission = (typeof permissionMap)[UserRole][number];
 
-export function canAccess(role: UserRole, permission: Permission) {
+export function canAccess(role: UserRole, permission: Permission): boolean {
   const rolePermissions = permissionMap[role] as readonly Permission[];
   return rolePermissions.includes(permission);
 }

@@ -1,7 +1,7 @@
 import { useGetAuditLogQuery } from '../services/dashboardApi';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 
-export function AuditLogPanel() {
+export function AuditLogPanel(): JSX.Element {
   const { data, isLoading } = useGetAuditLogQuery();
 
   if (isLoading) {

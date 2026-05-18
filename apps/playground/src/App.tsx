@@ -30,17 +30,21 @@ interface MetricData {
   label: string;
 }
 
-export default function Playground() {
+export default function Playground(): JSX.Element {
   const [connection, setConnection] = useState<ConnectionState>({
     status: 'disconnected',
     retryCount: 0,
   });
-  const [isLoading, setIsLoading] = useState(false);
   const [metrics, setMetrics] = useState<MetricData[]>([]);
   const [activeTab, setActiveTab] = useState<'realtime' | 'resilience' | 'patterns'>('realtime');
 
+  type PlaygroundTab = {
+    id: 'realtime' | 'resilience' | 'patterns';
+    label: string;
+  };
+
   // Simulate websocket connection with retry logic
-  const connectWebSocket = useCallback(async () => {
+  const connectWebSocket = useCallback(async (): Promise<void> => {
     setConnection({ status: 'connecting', retryCount: connection.retryCount });
 
     try {
@@ -70,7 +74,7 @@ export default function Playground() {
           lastError: (error as Error).message,
         });
         setTimeout(() => {
-          connectWebSocket();
+          void connectWebSocket();
         }, backoffDelay);
       } else {
         setConnection({
@@ -84,24 +88,28 @@ export default function Playground() {
 
   // Auto-connect on mount
   useEffect(() => {
-    connectWebSocket();
-  }, []);
+    void connectWebSocket();
+  }, [connectWebSocket]);
 
-  const handleReconnect = () => {
+  const handleReconnect = (): void => {
     setConnection({ status: 'disconnected', retryCount: 0 });
-    setTimeout(() => connectWebSocket(), 500);
+    setTimeout(() => {
+      void connectWebSocket();
+    }, 500);
   };
 
-  const handleSimulateFailure = () => {
+  const handleSimulateFailure = (): void => {
     setConnection({
       status: 'retrying',
       retryCount: 0,
       lastError: 'Simulated connection loss',
     });
-    setTimeout(() => connectWebSocket(), 1000);
+    setTimeout(() => {
+      void connectWebSocket();
+    }, 1000);
   };
 
-  const getStatusColor = (status: ConnectionState['status']) => {
+  const getStatusColor = (status: ConnectionState['status']): string => {
     switch (status) {
       case 'connected':
         return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
@@ -128,14 +136,14 @@ export default function Playground() {
             </div>
           </div>
 
-          {[
+          {([
             { id: 'realtime', label: 'Realtime' },
             { id: 'resilience', label: 'Resilience' },
             { id: 'patterns', label: 'Patterns' },
-          ].map((tab) => (
+          ] as PlaygroundTab[]).map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
               className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'bg-purple-600 text-white'

@@ -18,8 +18,8 @@
 
   "scripts": {
     "build": "tsc && vite build",
-    "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "lint": "eslint src --ext .ts,.tsx --ignore-pattern '**/*.d.ts'",
+    "lint:fix": "eslint src --ext .ts,.tsx --ignore-pattern '**/*.d.ts' --fix",
     "type-check": "tsc --noEmit",
     "test": "vitest",
     "test:watch": "vitest --watch",

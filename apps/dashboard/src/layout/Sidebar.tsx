@@ -12,7 +12,7 @@ const navItems = [
   { label: 'Notifications', hint: 'Inbox' },
 ];
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar({ user }: SidebarProps): JSX.Element {
   return (
     <aside className="hidden w-72 shrink-0 flex-col gap-8 border-r border-slate-800 bg-slate-950 p-6 lg:flex">
       <div>

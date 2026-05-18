@@ -26,7 +26,7 @@
   },
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint src --ext .ts,.tsx --ignore-pattern '**/*.d.ts'",
     "type-check": "tsc --noEmit",
     "test": "vitest"
   },

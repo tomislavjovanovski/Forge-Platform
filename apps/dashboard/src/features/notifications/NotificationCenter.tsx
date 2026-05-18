@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { markRead } from './notificationSlice';
 
-export function NotificationCenter() {
+export function NotificationCenter(): JSX.Element {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.notifications.items);
   const unread = useMemo(() => items.filter((item) => item.unread).length, [items]);

@@ -6,7 +6,7 @@ export async function mockApiEndpoint(
   response: unknown,
   status = 200,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET'
-) {
+): Promise<void> {
   await page.route(url, (route: Route) => {
     if (route.request().method() !== method) {
       return route.fallback();

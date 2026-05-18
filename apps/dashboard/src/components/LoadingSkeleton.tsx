@@ -1,4 +1,4 @@
-export function LoadingSkeleton({ rows = 4 }: { rows?: number }) {
+export function LoadingSkeleton({ rows = 4 }: { rows?: number }): JSX.Element {
   return (
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, index) => (

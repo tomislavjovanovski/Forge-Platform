@@ -3,7 +3,7 @@ import { handlers } from './handlers';
 
 export const worker = setupWorker(...handlers);
 
-export async function initializeMockServiceWorker() {
+export async function initializeMockServiceWorker(): Promise<void> {
   if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
     return;
   }

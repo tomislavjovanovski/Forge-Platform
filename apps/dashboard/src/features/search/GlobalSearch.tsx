@@ -8,7 +8,7 @@ const items = [
   { id: 's-05', label: 'Feature flags', path: '/flags' },
 ];
 
-export function GlobalSearch() {
+export function GlobalSearch(): JSX.Element {
   const [query, setQuery] = useState('');
   const results = useMemo(
     () =>

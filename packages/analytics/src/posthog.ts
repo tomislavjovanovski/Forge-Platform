@@ -1,7 +1,14 @@
 import posthog from 'posthog-js';
-import type { AnalyticsConfig, AnalyticsEvent } from '../index';
+import type { AnalyticsConfig, AnalyticsEvent } from './index';
 
-export function initPostHog(config: AnalyticsConfig) {
+type PostHogWindow = {
+  posthog?: {
+    capture: (event: string, properties?: Record<string, unknown>) => void;
+    identify: (userId: string, traits?: Record<string, unknown>) => void;
+  };
+};
+
+export function initPostHog(config: AnalyticsConfig): void {
   if (!config.enabled || !config.apiKey) {
     return;
   }
@@ -11,7 +18,7 @@ export function initPostHog(config: AnalyticsConfig) {
     autocapture: true,
     capture_pageview: true,
     persistence: 'localStorage',
-    loaded: () => {
+    loaded: (): void => {
       if (config.enabled) {
         posthog.capture('analytics.initialized', {
           environment: typeof window !== 'undefined' ? window.location.hostname : 'server',
@@ -21,18 +28,28 @@ export function initPostHog(config: AnalyticsConfig) {
   });
 }
 
-export function trackEvent(event: AnalyticsEvent) {
-  if (typeof window === 'undefined' || !window.posthog) {
+export function trackEvent(event: AnalyticsEvent): void {
+  if (typeof window === 'undefined') {
     return;
   }
 
-  window.posthog.capture(event.event, event.properties);
+  const win = window as Window & PostHogWindow;
+  if (!win.posthog) {
+    return;
+  }
+
+  win.posthog.capture(event.event, event.properties);
 }
 
-export function identifyUser(userId: string, traits?: Record<string, unknown>) {
-  if (typeof window === 'undefined' || !window.posthog) {
+export function identifyUser(userId: string, traits?: Record<string, unknown>): void {
+  if (typeof window === 'undefined') {
     return;
   }
 
-  window.posthog.identify(userId, traits);
+  const win = window as Window & PostHogWindow;
+  if (!win.posthog) {
+    return;
+  }
+
+  win.posthog.identify(userId, traits);
 }

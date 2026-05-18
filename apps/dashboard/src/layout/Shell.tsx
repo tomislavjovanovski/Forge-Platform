@@ -10,7 +10,7 @@ interface ShellProps {
   children: ReactNode;
 }
 
-export function Shell({ user, unreadCount, onOpenNotifications, children }: ShellProps) {
+export function Shell({ user, unreadCount, onOpenNotifications, children }: ShellProps): JSX.Element {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="relative mx-auto flex min-h-screen max-w-full overflow-hidden lg:max-w-[1600px]">

@@ -5,7 +5,7 @@ interface RBACPanelProps {
   user: UserProfile;
 }
 
-export function RBACPanel({ user }: RBACPanelProps) {
+export function RBACPanel({ user }: RBACPanelProps): JSX.Element {
   const permissions = permissionMap[user.role] ?? [];
 
   return (

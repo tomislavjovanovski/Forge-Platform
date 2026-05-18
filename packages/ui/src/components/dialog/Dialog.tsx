@@ -4,7 +4,14 @@
  * Built on portal pattern for proper z-index handling
  */
 
-import React, { forwardRef, useEffect, useRef, useCallback } from 'react';
+import React, {
+  forwardRef,
+  useEffect,
+  useRef,
+  useCallback,
+  type ReactElement,
+} from 'react';
+
 import { cn } from '../../utils/cn';
 
 export interface DialogProps {
@@ -16,7 +23,9 @@ export interface DialogProps {
   /**
    * Callback when dialog requests to close
    */
-  onOpenChange: (open: boolean) => void;
+  onOpenChange: (
+    open: boolean,
+  ) => void;
 
   /**
    * Dialog title
@@ -46,7 +55,11 @@ export interface DialogProps {
   /**
    * Size of dialog
    */
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?:
+    | 'sm'
+    | 'md'
+    | 'lg'
+    | 'xl';
 
   /**
    * Whether clicking backdrop closes dialog
@@ -81,28 +94,10 @@ const sizeVariants = {
   xl: 'max-w-xl',
 } as const;
 
-/**
- * Dialog component
- * @example
- * ```tsx
- * const [open, setOpen] = useState(false);
- *
- * return (
- *   <>
- *     <Button onClick={() => setOpen(true)}>Open Dialog</Button>
- *
- *     <Dialog isOpen={open} onOpenChange={setOpen} title="Confirm Action">
- *       <p>Are you sure you want to proceed?</p>
- *       <DialogFooter>
- *         <Button onClick={() => setOpen(false)}>Cancel</Button>
- *         <Button variant="primary">Confirm</Button>
- *       </DialogFooter>
- *     </Dialog>
- *   </>
- * );
- * ```
- */
-const Dialog = forwardRef<HTMLDivElement, DialogProps>(
+const Dialog = forwardRef<
+  HTMLDivElement,
+  DialogProps
+>(
   (
     {
       isOpen,
@@ -116,81 +111,147 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       closeOnBackdropClick = true,
       className,
       'aria-label': ariaLabel,
-      'aria-labelledby': ariaLabelledby,
-      'aria-describedby': ariaDescribedby,
+      'aria-labelledby':
+        ariaLabelledby,
+      'aria-describedby':
+        ariaDescribedby,
     },
-    _ref
-  ) => {
-    const dialogRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-    const previouslyFocusedElement = useRef<HTMLElement | null>(null);
+    _ref,
+  ): ReactElement | null => {
+    const dialogRef =
+      useRef<HTMLDivElement>(null);
+
+    const contentRef =
+      useRef<HTMLDivElement>(null);
+
+    const previouslyFocusedElement =
+      useRef<HTMLElement | null>(
+        null,
+      );
 
     // Handle escape key
-    useEffect(() => {
-      if (!isOpen) return;
+    useEffect((): (() => void) | void => {
+      if (!isOpen) {
+        return;
+      }
 
-      const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === 'Escape') {
+      const handleKeyDown = (
+        event: KeyboardEvent,
+      ): void => {
+        if (
+          event.key === 'Escape'
+        ) {
           onOpenChange(false);
         }
       };
 
-      document.addEventListener('keydown', handleKeyDown);
-      return () => document.removeEventListener('keydown', handleKeyDown);
+      document.addEventListener(
+        'keydown',
+        handleKeyDown,
+      );
+
+      return (): void => {
+        document.removeEventListener(
+          'keydown',
+          handleKeyDown,
+        );
+      };
     }, [isOpen, onOpenChange]);
 
     // Focus management
-    useEffect(() => {
+    useEffect((): (() => void) | void => {
       if (!isOpen) {
         // Restore focus when dialog closes
-        if (previouslyFocusedElement.current) {
+        if (
+          previouslyFocusedElement.current
+        ) {
           previouslyFocusedElement.current.focus();
-          previouslyFocusedElement.current = null;
+
+          previouslyFocusedElement.current =
+            null;
         }
+
         return;
       }
 
       // Save focused element
-      previouslyFocusedElement.current = document.activeElement as HTMLElement;
+      previouslyFocusedElement.current =
+        document.activeElement as HTMLElement;
 
       // Disable body scroll
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
+      const originalOverflow =
+        document.body.style
+          .overflow;
+
+      document.body.style.overflow =
+        'hidden';
 
       // Focus first interactive element in dialog
-      setTimeout(() => {
-        if (contentRef.current) {
-          const closeButton = contentRef.current.querySelector('[data-dialog-close]') as HTMLElement;
-          const firstButton = contentRef.current.querySelector('button') as HTMLElement;
-          const firstInput = contentRef.current.querySelector('input, textarea, select') as HTMLElement;
+      setTimeout((): void => {
+        if (
+          contentRef.current
+        ) {
+          const closeButton =
+            contentRef.current.querySelector<HTMLElement>(
+              '[data-dialog-close]',
+            );
 
-          (closeButton || firstButton || firstInput)?.focus();
+          const firstButton =
+            contentRef.current.querySelector<HTMLButtonElement>(
+              'button',
+            );
+
+          const firstInput =
+            contentRef.current.querySelector<HTMLElement>(
+              'input, textarea, select',
+            );
+
+          (
+            closeButton ||
+            firstButton ||
+            firstInput
+          )?.focus();
         }
       }, 0);
 
-      return () => {
-        document.body.style.overflow = originalOverflow;
+      return (): void => {
+        document.body.style.overflow =
+          originalOverflow;
       };
     }, [isOpen]);
 
     // Handle backdrop click
-    const handleBackdropClick = useCallback(
-      (event: React.MouseEvent<HTMLDivElement>) => {
-        if (closeOnBackdropClick && event.target === event.currentTarget) {
-          onOpenChange(false);
-        }
-      },
-      [closeOnBackdropClick, onOpenChange]
-    );
+    const handleBackdropClick =
+      useCallback(
+        (
+          event: React.MouseEvent<HTMLDivElement>,
+        ): void => {
+          if (
+            closeOnBackdropClick &&
+            event.target ===
+              event.currentTarget
+          ) {
+            onOpenChange(false);
+          }
+        },
+        [
+          closeOnBackdropClick,
+          onOpenChange,
+        ],
+      );
 
-    if (!isOpen) return null;
+    if (!isOpen) {
+      return null;
+    }
 
     return (
       <>
         {/* Backdrop */}
-        <div
+        <button
+          type="button"
           className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-200"
-          aria-hidden="true"
+          aria-label="Close dialog"
+          onClick={handleBackdropClick}
         />
 
         {/* Dialog */}
@@ -199,13 +260,17 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
           role="dialog"
           aria-modal="true"
           aria-label={ariaLabel}
-          aria-labelledby={ariaLabelledby}
-          aria-describedby={ariaDescribedby}
+          aria-labelledby={
+            ariaLabelledby
+          }
+          aria-describedby={
+            ariaDescribedby
+          }
+          tabIndex={-1}
           className={cn(
             'fixed inset-0 z-50 flex items-center justify-center p-4',
-            className
+            className,
           )}
-          onClick={handleBackdropClick}
         >
           {/* Content */}
           <div
@@ -215,7 +280,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
               'flex flex-col max-h-[90vh] overflow-hidden',
               'animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-200',
               sizeVariants[size],
-              contentClassName
+              contentClassName,
             )}
           >
             {/* Header */}
@@ -224,11 +289,13 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
                 className={cn(
                   'flex items-center justify-between gap-4',
                   'border-b border-slate-200 dark:border-slate-700',
-                  'px-6 py-4'
+                  'px-6 py-4',
                 )}
               >
                 <h2
-                  id={ariaLabelledby}
+                  id={
+                    ariaLabelledby
+                  }
                   className="text-lg font-semibold text-slate-900 dark:text-slate-50"
                 >
                   {title}
@@ -238,15 +305,20 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
                 {showClose && (
                   <button
                     data-dialog-close
-                    onClick={() => onOpenChange(false)}
+                    onClick={(): void =>
+                      onOpenChange(
+                        false,
+                      )
+                    }
                     className={cn(
                       'flex items-center justify-center h-8 w-8 rounded-lg',
                       'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
                       'dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
-                      'transition-colors duration-200'
+                      'transition-colors duration-200',
                     )}
                     aria-label="Close dialog"
+                    type="button"
                   >
                     <svg
                       className="h-5 w-5"
@@ -257,7 +329,9 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
+                        strokeWidth={
+                          2
+                        }
                         d="M6 18L18 6M6 6l12 12"
                       />
                     </svg>
@@ -277,7 +351,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
                 className={cn(
                   'flex items-center justify-end gap-3',
                   'border-t border-slate-200 dark:border-slate-700',
-                  'px-6 py-4 bg-slate-50 dark:bg-slate-800'
+                  'px-6 py-4 bg-slate-50 dark:bg-slate-800',
                 )}
               >
                 {footer}
@@ -287,9 +361,10 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         </div>
       </>
     );
-  }
+  },
 );
 
-Dialog.displayName = 'Dialog';
+Dialog.displayName =
+  'Dialog';
 
 export { Dialog };

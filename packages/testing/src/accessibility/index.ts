@@ -1,6 +1,10 @@
 import axe from 'axe-core';
+import type { AxeResults } from 'axe-core';
 
-export async function runAxe(element: HTMLElement, options?: axe.RunOptions) {
+export async function runAxe(
+  element: HTMLElement,
+  options?: axe.RunOptions
+): Promise<AxeResults> {
   const results = await axe.run(element, {
     ...options,
     rules: {
@@ -18,9 +22,10 @@ export async function runAxe(element: HTMLElement, options?: axe.RunOptions) {
       )
       .join('\n\n');
 
-    const error = new Error(`Accessibility violations detected:\n${messages}`);
-    // Keep violations observable for test dashboards / failure analysis.
-    (error as any).axeResults = results;
+    const error = new Error(`Accessibility violations detected:\n${messages}`) as Error & {
+      axeResults?: AxeResults;
+    };
+    error.axeResults = results;
     throw error;
   }
 
