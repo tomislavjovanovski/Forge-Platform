@@ -9,4 +9,6 @@ export interface SentryConfig {
     enabled: boolean;
     tracesSampleRate?: number;
 }
+export * from './errors';
+export * from './errorBoundary';
 //# sourceMappingURL=index.d.ts.map

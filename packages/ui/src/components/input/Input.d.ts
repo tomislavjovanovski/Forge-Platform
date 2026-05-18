@@ -7,11 +7,11 @@ import React from 'react';
 import { type VariantProps } from 'class-variance-authority';
 declare const inputVariants: (props?: ({
     size?: "sm" | "md" | "lg" | null | undefined;
-    error?: boolean | null | undefined;
+    hasError?: boolean | null | undefined;
     disabled?: boolean | null | undefined;
     fullWidth?: boolean | null | undefined;
 } & import("class-variance-authority/types").ClassProp) | undefined) => string;
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>, VariantProps<typeof inputVariants> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'disabled'>, Omit<VariantProps<typeof inputVariants>, 'hasError'> {
     /**
      * Icon to display before input
      */

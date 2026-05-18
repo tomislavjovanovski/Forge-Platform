@@ -1,8 +1,9 @@
 /**
  * FilterableTable Pattern
- * Reusable table component with sorting, filtering, and responsive behavior
+ * Reusable table component with sorting,
+ * filtering, and responsive behavior
  */
-import React, { ReactNode } from 'react';
+import { type ReactNode, type ReactElement, type ForwardedRef } from 'react';
 export interface Column<T> {
     id: string;
     header: ReactNode;
@@ -24,16 +25,12 @@ export interface FilterableTableProps<T> {
     /** CSS class name */
     className?: string;
 }
-/**
- * FilterableTable Component
- * Provides a table with built-in filtering, sorting, and responsive design
- *
- * Features:
- * - Sortable columns
- * - Search/filter support
- * - Responsive horizontal scroll on mobile
- * - Keyboard accessible
- * - Dark mode support
- */
-export declare const FilterableTable: React.ForwardRefExoticComponent<FilterableTableProps<any> & React.RefAttributes<HTMLDivElement>>;
+interface FilterableTableComponent {
+    <T>(props: FilterableTableProps<T> & {
+        ref?: ForwardedRef<HTMLDivElement>;
+    }): ReactElement;
+    displayName?: string;
+}
+declare const ForwardedFilterableTable: FilterableTableComponent;
+export { ForwardedFilterableTable as FilterableTable, };
 //# sourceMappingURL=FilterableTable.d.ts.map

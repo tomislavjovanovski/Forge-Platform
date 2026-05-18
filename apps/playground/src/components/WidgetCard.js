@@ -1,0 +1,5 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export function WidgetCard({ eyebrow, title, description, action, className = '', children, }) {
+    return (_jsxs("section", { className: `rounded-[28px] border border-white/10 bg-slate-950/70 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.35)] backdrop-blur ${className}`, children: [_jsxs("div", { className: "flex flex-wrap items-start justify-between gap-4", children: [_jsxs("div", { children: [_jsx("p", { className: "text-[0.65rem] font-semibold uppercase tracking-[0.34em] text-cyan-300/70", children: eyebrow }), _jsx("h2", { className: "mt-2 text-xl font-semibold text-white", children: title }), description ? (_jsx("p", { className: "mt-2 max-w-2xl text-sm leading-6 text-slate-400", children: description })) : null] }), action ? _jsx("div", { className: "shrink-0", children: action }) : null] }), _jsx("div", { className: "mt-5", children: children })] }));
+}
+//# sourceMappingURL=WidgetCard.js.map

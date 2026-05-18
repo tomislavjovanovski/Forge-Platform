@@ -1,8 +1,10 @@
 /**
  * SettingsForm Pattern
- * Reusable form component for settings/configuration with validation
+ * Reusable form component for
+ * settings/configuration with validation
  */
-import React, { ReactNode } from 'react';
+import { type ReactNode } from 'react';
+type FormValue = string | boolean;
 export interface FormField {
     name: string;
     label: ReactNode;
@@ -15,13 +17,13 @@ export interface FormField {
     }>;
     required?: boolean;
     error?: string;
-    defaultValue?: string | boolean;
+    defaultValue?: FormValue;
 }
 export interface SettingsFormProps {
     /** Form fields */
     fields: FormField[];
     /** Form submission handler */
-    onSubmit?: (data: Record<string, any>) => void | Promise<void>;
+    onSubmit?: (data: Record<string, FormValue>) => void | Promise<void>;
     /** Submit button label */
     submitLabel?: ReactNode;
     /** Show cancel button */
@@ -39,15 +41,10 @@ export interface SettingsFormProps {
 }
 /**
  * SettingsForm Component
- * Provides a form for settings and configuration with validation and error handling
- *
- * Features:
- * - Multiple field types
- * - Validation support
- * - Error display
- * - Loading state
- * - Responsive design
- * - Dark mode support
+ * Provides a form for settings
+ * and configuration with validation
+ * and error handling
  */
-export declare const SettingsForm: React.ForwardRefExoticComponent<SettingsFormProps & React.RefAttributes<HTMLFormElement>>;
+declare const SettingsForm: import("react").ForwardRefExoticComponent<SettingsFormProps & import("react").RefAttributes<HTMLFormElement>>;
+export { SettingsForm, };
 //# sourceMappingURL=SettingsForm.d.ts.map

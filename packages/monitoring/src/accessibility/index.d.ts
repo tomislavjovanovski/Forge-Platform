@@ -1,2 +1,2 @@
-export declare function testAccessibility(_element: HTMLElement): Promise<void>;
+export declare function testAccessibility(_element: HTMLElement): void;
 //# sourceMappingURL=index.d.ts.map

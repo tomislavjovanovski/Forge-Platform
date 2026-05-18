@@ -1,8 +1,9 @@
 /**
  * AsyncSection Pattern
- * Wraps async content with loading, error, and empty states
+ * Wraps async content with loading,
+ * error, and empty states
  */
-import React, { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 export interface AsyncSectionProps {
     /** Content to render when loaded */
     children: ReactNode;
@@ -20,12 +21,16 @@ export interface AsyncSectionProps {
     errorContent?: (error: Error) => ReactNode;
     /** Section title */
     title?: ReactNode;
+    /** Section description */
+    description?: ReactNode;
     /** CSS class name */
     className?: string;
 }
 /**
  * AsyncSection Component
- * Handles loading, error, and empty states for async content
+ * Handles loading, error,
+ * and empty states
+ * for async content
  */
-export declare const AsyncSection: React.ForwardRefExoticComponent<AsyncSectionProps & React.RefAttributes<HTMLDivElement>>;
+export declare const AsyncSection: import("react").ForwardRefExoticComponent<AsyncSectionProps & import("react").RefAttributes<HTMLDivElement>>;
 //# sourceMappingURL=AsyncSection.d.ts.map

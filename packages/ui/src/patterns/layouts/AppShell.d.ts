@@ -1,9 +1,13 @@
 /**
  * AppShell Pattern
- * Primary application layout with header, sidebar, and main content area
- * Responsive layout that collapses sidebar on mobile
+ * Primary application layout
+ * with header, sidebar,
+ * and main content area
+ *
+ * Responsive layout that
+ * collapses sidebar on mobile
  */
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 export interface AppShellProps {
     /** Sidebar content */
     sidebar?: ReactNode;
@@ -18,14 +22,16 @@ export interface AppShellProps {
 }
 /**
  * AppShell Component
- * Provides a complete application layout structure
+ * Provides a complete application
+ * layout structure
  *
  * Features:
- * - Responsive sidebar (collapsible on mobile)
- * - Fixed header with navigation
- * - Flexible main content area
+ * - Responsive sidebar
+ * - Fixed header
+ * - Flexible content area
  * - Optional footer
  * - Dark mode support
  */
-export declare const AppShell: React.ForwardRefExoticComponent<AppShellProps & React.RefAttributes<HTMLDivElement>>;
+declare const AppShell: React.ForwardRefExoticComponent<AppShellProps & React.RefAttributes<HTMLDivElement>>;
+export { AppShell };
 //# sourceMappingURL=AppShell.d.ts.map

@@ -1,9 +1,11 @@
 /**
  * PageContainer Pattern
- * Responsive container for page content with consistent padding and max-width
+ * Responsive container for page content
+ * with consistent padding and max-width
  */
-import React, { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 export interface PageContainerProps {
+    /** Page content */
     children: ReactNode;
     /** Optional page title */
     title?: ReactNode;
@@ -16,7 +18,9 @@ export interface PageContainerProps {
 }
 /**
  * PageContainer Component
- * Wraps page content with consistent spacing, max-width, and responsive behavior
+ * Wraps page content with consistent spacing,
+ * max-width, and responsive behavior
  */
-export declare const PageContainer: React.ForwardRefExoticComponent<PageContainerProps & React.RefAttributes<HTMLDivElement>>;
+declare const PageContainer: import("react").ForwardRefExoticComponent<PageContainerProps & import("react").RefAttributes<HTMLDivElement>>;
+export { PageContainer };
 //# sourceMappingURL=PageContainer.d.ts.map

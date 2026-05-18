@@ -1,4 +1,5 @@
+import type { ReactNode } from 'react';
 export declare const AuthProvider: ({ children }: {
-    children: React.ReactNode;
-}) => import("react/jsx-runtime").JSX.Element;
+    children: ReactNode;
+}) => ReactNode;
 //# sourceMappingURL=index.d.ts.map

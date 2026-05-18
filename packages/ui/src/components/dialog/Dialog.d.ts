@@ -3,7 +3,7 @@
  * Modal dialog with backdrop, proper focus management, and accessibility
  * Built on portal pattern for proper z-index handling
  */
-import React from 'react';
+import { type ReactNode } from 'react';
 export interface DialogProps {
     /**
      * Whether dialog is open
@@ -16,15 +16,15 @@ export interface DialogProps {
     /**
      * Dialog title
      */
-    title?: React.ReactNode;
+    title?: ReactNode;
     /**
      * Dialog content
      */
-    children: React.ReactNode;
+    children: ReactNode;
     /**
      * Dialog footer
      */
-    footer?: React.ReactNode;
+    footer?: ReactNode;
     /**
      * Custom content class
      */
@@ -58,27 +58,6 @@ export interface DialogProps {
      */
     'aria-describedby'?: string;
 }
-/**
- * Dialog component
- * @example
- * ```tsx
- * const [open, setOpen] = useState(false);
- *
- * return (
- *   <>
- *     <Button onClick={() => setOpen(true)}>Open Dialog</Button>
- *
- *     <Dialog isOpen={open} onOpenChange={setOpen} title="Confirm Action">
- *       <p>Are you sure you want to proceed?</p>
- *       <DialogFooter>
- *         <Button onClick={() => setOpen(false)}>Cancel</Button>
- *         <Button variant="primary">Confirm</Button>
- *       </DialogFooter>
- *     </Dialog>
- *   </>
- * );
- * ```
- */
-declare const Dialog: React.ForwardRefExoticComponent<DialogProps & React.RefAttributes<HTMLDivElement>>;
+declare const Dialog: import("react").ForwardRefExoticComponent<DialogProps & import("react").RefAttributes<HTMLDivElement>>;
 export { Dialog };
 //# sourceMappingURL=Dialog.d.ts.map

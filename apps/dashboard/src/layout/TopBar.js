@@ -1,0 +1,10 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { toggleMode } from '../features/theme/themeSlice';
+import { GlobalSearch } from '../features/search/GlobalSearch';
+export function TopBar({ unreadCount, onOpenNotifications }) {
+    const dispatch = useAppDispatch();
+    const theme = useAppSelector((state) => state.theme.mode);
+    return (_jsxs("header", { className: "flex flex-col gap-4 border-b border-slate-800 bg-slate-950/90 px-6 py-5 shadow-sm shadow-slate-950/20 backdrop-blur", children: [_jsxs("div", { className: "flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between", children: [_jsxs("div", { children: [_jsx("p", { className: "text-sm uppercase tracking-[0.3em] text-slate-500", children: "Admin dashboard" }), _jsx("h2", { className: "mt-2 text-2xl font-semibold text-slate-50", children: "Command center" })] }), _jsxs("div", { className: "flex flex-wrap items-center gap-3", children: [_jsx("button", { type: "button", onClick: () => dispatch(toggleMode()), className: "rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:border-slate-600 hover:bg-slate-800", children: theme === 'dark' ? 'Light mode' : 'Dark mode' }), _jsxs("button", { type: "button", onClick: onOpenNotifications, className: "relative rounded-2xl border border-slate-800 bg-slate-900 px-4 py-2 text-sm text-slate-100 transition hover:border-slate-600 hover:bg-slate-800", children: ["Notifications", unreadCount > 0 && (_jsx("span", { className: "absolute -right-2 -top-2 rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.24em] text-white", children: unreadCount }))] })] })] }), _jsx(GlobalSearch, {})] }));
+}
+//# sourceMappingURL=TopBar.js.map

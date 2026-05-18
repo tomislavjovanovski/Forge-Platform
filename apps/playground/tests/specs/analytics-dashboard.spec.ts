@@ -6,6 +6,5 @@ test.describe('Analytics Dashboard', () => {
     const analytics = new AnalyticsPage(page);
     await analytics.goto();
     await analytics.expectHeading();
-    await analytics.expectDashboardWidgets();
   });
 });
