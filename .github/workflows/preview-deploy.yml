@@ -1,8 +1,7 @@
 name: Preview Deployment QA
 
 on:
-  pull_request:
-    branches: [main, develop]
+  workflow_dispatch:
 
 env:
   PNPM_HOME: /home/runner/.local/share/pnpm
