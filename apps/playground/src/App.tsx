@@ -10,7 +10,12 @@
  * - Connection status tracking
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  type ReactElement,
+} from 'react';
 import {
   AppShell,
   PageContainer,
@@ -30,7 +35,7 @@ interface MetricData {
   label: string;
 }
 
-export default function Playground(): JSX.Element {
+export default function Playground(): ReactElement {
   const [connection, setConnection] = useState<ConnectionState>({
     status: 'disconnected',
     retryCount: 0,

@@ -1,3 +1,5 @@
-export const AuthProvider = ({ children }: { children: React.ReactNode }): JSX.Element => {
+import type { ReactNode } from 'react';
+
+export const AuthProvider = ({ children }: { children: ReactNode }): ReactNode => {
   return <>{children}</>;
 };

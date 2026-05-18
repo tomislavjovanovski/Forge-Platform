@@ -4,12 +4,13 @@
  * settings/configuration with validation
  */
 
-import React, {
+import {
   useState,
   forwardRef,
   type ReactNode,
   type FormEvent,
   type ReactElement,
+  type ChangeEvent,
 } from 'react';
 
 import { cn } from '../../utils/cn';
@@ -89,14 +90,6 @@ export interface SettingsFormProps {
  * Provides a form for settings
  * and configuration with validation
  * and error handling
- *
- * Features:
- * - Multiple field types
- * - Validation support
- * - Error display
- * - Loading state
- * - Responsive design
- * - Dark mode support
  */
 const SettingsForm = forwardRef<
   HTMLFormElement,
@@ -147,9 +140,9 @@ const SettingsForm = forwardRef<
 
     const handleChange = (
       event:
-        | React.ChangeEvent<HTMLInputElement>
-        | React.ChangeEvent<HTMLSelectElement>
-        | React.ChangeEvent<HTMLTextAreaElement>,
+        | ChangeEvent<HTMLInputElement>
+        | ChangeEvent<HTMLSelectElement>
+        | ChangeEvent<HTMLTextAreaElement>,
     ): void => {
       const target =
         event.target;
@@ -179,6 +172,17 @@ const SettingsForm = forwardRef<
       );
     };
 
+    const getStringValue = (
+      value:
+        | FormValue
+        | undefined,
+    ): string => {
+      return typeof value ===
+        'string'
+        ? value
+        : '';
+    };
+
     const handleSubmit =
       async (
         event: FormEvent<HTMLFormElement>,
@@ -197,11 +201,13 @@ const SettingsForm = forwardRef<
     return (
       <form
         ref={ref}
-        onSubmit={
-          (event): void => {
-            void handleSubmit(event);
-          }
-        }
+        onSubmit={(
+          event,
+        ): void => {
+          void handleSubmit(
+            event,
+          );
+        }}
         className={cn(
           'space-y-6 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900',
           className,
@@ -276,18 +282,12 @@ const SettingsForm = forwardRef<
                       placeholder={
                         field.placeholder
                       }
-                      value={
-                        typeof formData[
+                      value={getStringValue(
+                        formData[
                           field
                             .name
-                        ] ===
-                        'string'
-                          ? formData[
-                              field
-                                .name
-                            ]
-                          : ''
-                      }
+                        ],
+                      )}
                       onChange={
                         handleChange
                       }
@@ -310,18 +310,12 @@ const SettingsForm = forwardRef<
                       name={
                         field.name
                       }
-                      value={
-                        typeof formData[
+                      value={getStringValue(
+                        formData[
                           field
                             .name
-                        ] ===
-                        'string'
-                          ? formData[
-                              field
-                                .name
-                            ]
-                          : ''
-                      }
+                        ],
+                      )}
                       onChange={
                         handleChange
                       }
@@ -367,14 +361,12 @@ const SettingsForm = forwardRef<
                         field.name
                       }
                       type="checkbox"
-                      checked={
-                        Boolean(
-                          formData[
-                            field
-                              .name
-                          ],
-                        )
-                      }
+                      checked={Boolean(
+                        formData[
+                          field
+                            .name
+                        ],
+                      )}
                       onChange={
                         handleChange
                       }
@@ -399,18 +391,12 @@ const SettingsForm = forwardRef<
                       placeholder={
                         field.placeholder
                       }
-                      value={
-                        typeof formData[
+                      value={getStringValue(
+                        formData[
                           field
                             .name
-                        ] ===
-                        'string'
-                          ? formData[
-                              field
-                                .name
-                            ]
-                          : ''
-                      }
+                        ],
+                      )}
                       onChange={
                         handleChange
                       }

@@ -4,7 +4,7 @@
  * with consistent padding and max-width
  */
 
-import React, {
+import {
   forwardRef,
   type ReactNode,
   type ReactElement,
@@ -70,9 +70,7 @@ const PageContainer = forwardRef<
 
               {description && (
                 <p className="mt-2 text-slate-600 dark:text-slate-400">
-                  {
-                    description
-                  }
+                  {description}
                 </p>
               )}
             </div>

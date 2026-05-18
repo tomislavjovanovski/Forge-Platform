@@ -4,23 +4,30 @@
  * filtering, and responsive behavior
  */
 
-import React, {
+import {
   useState,
   useMemo,
   forwardRef,
   type ReactNode,
   type ReactElement,
+  type ForwardedRef,
+  type ChangeEvent,
+  type KeyboardEvent,
 } from 'react';
 
 import { cn } from '../../utils/cn';
 
 export interface Column<T> {
   id: string;
+
   header: ReactNode;
+
   accessor: (
     row: T,
   ) => ReactNode;
+
   sortable?: boolean;
+
   className?: string;
 }
 
@@ -76,7 +83,7 @@ function FilterableTableInner<T>(
     showRowNumbers = false,
     className,
   }: FilterableTableProps<T>,
-  ref: React.ForwardedRef<HTMLDivElement>,
+  ref: ForwardedRef<HTMLDivElement>,
 ): ReactElement {
   const [
     sortColumn,
@@ -97,7 +104,6 @@ function FilterableTableInner<T>(
     setSearchQuery,
   ] = useState('');
 
-  // Process data through filtering and sorting
   const processedData =
     useMemo((): T[] => {
       let result: T[] = data;
@@ -175,7 +181,7 @@ function FilterableTableInner<T>(
               searchQuery
             }
             onChange={(
-              event: React.ChangeEvent<HTMLInputElement>,
+              event: ChangeEvent<HTMLInputElement>,
             ): void => {
               setSearchQuery(
                 event.target
@@ -228,7 +234,7 @@ function FilterableTableInner<T>(
                       }
                     }}
                     onKeyDown={(
-                      event: React.KeyboardEvent<HTMLTableCellElement>,
+                      event: KeyboardEvent<HTMLTableCellElement>,
                     ): void => {
                       if (
                         !column.sortable
@@ -369,14 +375,19 @@ function FilterableTableInner<T>(
   );
 }
 
+interface FilterableTableComponent {
+  <T>(
+    props: FilterableTableProps<T> & {
+      ref?: ForwardedRef<HTMLDivElement>;
+    },
+  ): ReactElement;
+  displayName?: string;
+}
+
 const ForwardedFilterableTable =
   forwardRef(
     FilterableTableInner,
-  ) as <T>(
-    props: FilterableTableProps<T> & {
-      ref?: React.ForwardedRef<HTMLDivElement>;
-    },
-  ) => ReactElement;
+  ) as FilterableTableComponent;
 
 ForwardedFilterableTable.displayName =
   'FilterableTable';

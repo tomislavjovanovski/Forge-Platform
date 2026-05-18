@@ -2,6 +2,7 @@ import type {
   Meta,
   StoryObj,
   StoryFn,
+  StoryContext,
 } from '@storybook/react';
 
 import { AsyncSection } from '@forge/ui';
@@ -111,6 +112,9 @@ const renderErrorContent = (
 };
 
 export const Default: Story = {
+  args: {
+    children: <Content />,
+  },
   render: (): ReactElement => {
     return (
       <AsyncSection
@@ -124,6 +128,9 @@ export const Default: Story = {
 };
 
 export const Loading: Story = {
+  args: {
+    children: <Content />,
+  },
   render: (): ReactElement => {
     return (
       <AsyncSection
@@ -138,6 +145,9 @@ export const Loading: Story = {
 };
 
 export const Empty: Story = {
+  args: {
+    children: <Content />,
+  },
   render: (): ReactElement => {
     return (
       <AsyncSection
@@ -153,6 +163,9 @@ export const Empty: Story = {
 };
 
 export const Error: Story = {
+  args: {
+    children: <Content />,
+  },
   render: (): ReactElement => {
     return (
       <AsyncSection
@@ -170,24 +183,24 @@ export const Error: Story = {
 };
 
 export const DarkMode: Story = {
-  render: (): ReactElement => {
+  args: {
+    children: <Content />,
+  },
+  render: (args): ReactElement => {
     return (
       <div className="dark">
         <AsyncSection
           title="Team Members"
           description="Manage team members and their roles"
-        >
-          <Content />
-        </AsyncSection>
+          {...args}
+        />
       </div>
     );
   },
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): ReactElement => {
-      return <Story />;
+    (story: StoryFn, context: StoryContext): ReactElement => {
+      return story(context.args, context);
     },
   ],
 };
@@ -257,6 +270,9 @@ function InteractiveDemo(): ReactElement {
 }
 
 export const Interactive: Story = {
+  args: {
+    children: <Content />,
+  },
   render: (): ReactElement => {
     return <InteractiveDemo />;
   },

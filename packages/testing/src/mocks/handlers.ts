@@ -1,50 +1,105 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return */
-import { rest } from 'msw';
-import type { RestRequest, ResponseComposition, RestContext, RequestHandler } from 'msw';
+
+import {
+  http,
+  HttpResponse,
+} from 'msw';
+
+import type {
+  HttpHandler,
+} from 'msw';
+
 import { fixtures } from '../fixtures';
 
-const loginHandler = rest.post<{ email?: string }>(
-  '/api/auth/login',
-  async (
-    req: RestRequest<{ email?: string }>,
-    res: ResponseComposition,
-    ctx: RestContext
-  ) => {
-    const body = (await req.json()) as { email?: string };
-    const email = body.email;
+interface LoginRequestBody {
+  email?: string;
+}
 
-    if (email === fixtures.admin.email) {
-      return res(
-        ctx.status(200),
-        ctx.json({ token: 'admin-token', user: fixtures.admin })
+const loginHandler: HttpHandler =
+  http.post(
+    '/api/auth/login',
+    async ({
+      request,
+    }) => {
+      const body =
+        (await request.json()) as LoginRequestBody;
+
+      const email =
+        body.email;
+
+      if (
+        email ===
+        fixtures.admin.email
+      ) {
+        return HttpResponse.json(
+          {
+            token:
+              'admin-token',
+
+            user:
+              fixtures.admin,
+          },
+          {
+            status: 200,
+          },
+        );
+      }
+
+      return HttpResponse.json(
+        {
+          token:
+            'user-token',
+
+          user:
+            fixtures.user,
+        },
+        {
+          status: 200,
+        },
       );
-    }
+    },
+  );
 
-    return res(
-      ctx.status(200),
-      ctx.json({ token: 'user-token', user: fixtures.user })
-    );
-  }
-) as unknown as RequestHandler;
+export const authHandlers: HttpHandler[] =
+  [
+    loginHandler,
+  ];
 
-export const authHandlers: RequestHandler[] = [loginHandler];
+const userHandler: HttpHandler =
+  http.get(
+    '/api/user',
+    () => {
+      return HttpResponse.json(
+        fixtures.user,
+        {
+          status: 200,
+        },
+      );
+    },
+  );
 
-const userHandler = rest.get('/api/user', (_req, res, ctx) =>
-  res(ctx.status(200), ctx.json(fixtures.user))
-) as unknown as RequestHandler;
+const featureFlagsHandler: HttpHandler =
+  http.get(
+    '/api/feature-flags',
+    () => {
+      return HttpResponse.json(
+        {
+          enableNewDashboard:
+            true,
 
-const featureFlagsHandler = rest.get('/api/feature-flags', (_req, res, ctx) =>
-  res(
-    ctx.status(200),
-    ctx.json({
-      enableNewDashboard: true,
-      enableExperimentalCharts: false,
-    })
-  )
-) as unknown as RequestHandler;
+          enableExperimentalCharts:
+            false,
+        },
+        {
+          status: 200,
+        },
+      );
+    },
+  );
 
-export const defaultHandlers: RequestHandler[] = [
-  ...authHandlers,
-  userHandler,
-  featureFlagsHandler,
-];
+export const defaultHandlers: HttpHandler[] =
+  [
+    ...authHandlers,
+    userHandler,
+    featureFlagsHandler,
+  ];

@@ -3,7 +3,7 @@
  * Toggle between light and dark theme
  */
 
-import React, {
+import {
   useEffect,
   useState,
   forwardRef,

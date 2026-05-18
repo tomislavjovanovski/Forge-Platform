@@ -2,6 +2,7 @@ import type {
   Meta,
   StoryObj,
   StoryFn,
+  StoryContext,
 } from '@storybook/react';
 
 import {
@@ -157,15 +158,17 @@ export const Default: Story = {
   args: {
     data: SAMPLE_DATA,
 
-    columns,
+    columns: columns as Column<unknown>[],
 
     showRowNumbers: true,
 
     onFilter: (
-      data: User[],
+      data: unknown[],
       query: string,
-    ): User[] =>
-      data.filter(
+    ): unknown[] => {
+      const users = data as User[];
+
+      return users.filter(
         (
           item: User,
         ): boolean =>
@@ -179,15 +182,18 @@ export const Default: Story = {
             .includes(
               query.toLowerCase(),
             ),
-      ),
+      );
+    },
 
     onSort: (
-      data: User[],
+      data: unknown[],
       columnId: string,
       direction: 'asc' | 'desc',
-    ): User[] => {
+    ): unknown[] => {
+      const users = data as User[];
+
       const sorted: User[] = [
-        ...data,
+        ...users,
       ].sort(
         (
           a: User,
@@ -246,11 +252,9 @@ export const DarkMode: Story = {
   },
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): JSX.Element => (
+    (story: StoryFn, context: StoryContext): JSX.Element => (
       <div className="dark">
-        <Story />
+        {story(context.args, context)}
       </div>
     ),
   ],

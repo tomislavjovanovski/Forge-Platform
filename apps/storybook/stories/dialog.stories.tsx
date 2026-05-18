@@ -1,6 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { useState, type JSX, type ReactNode } from 'react';
-import { Dialog, Button } from '@forge/ui';
+import type {
+  Meta,
+  StoryObj,
+} from '@storybook/react';
+import { useState, type JSX } from 'react';import type { ComponentProps } from 'react';import { Dialog, Button } from '@forge/ui';
 
 /**
  * Dialog component
@@ -47,10 +49,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-interface DialogWithTriggerProps
-  extends React.ComponentProps<typeof Dialog> {
-  children?: ReactNode;
-}
+type DialogWithTriggerProps = Omit<ComponentProps<typeof Dialog>, 'isOpen' | 'onOpenChange'>;
 
 /**
  * Dialog trigger component for stories
@@ -81,9 +80,14 @@ function DialogWithTrigger(
  * Default dialog
  */
 export const Default: Story = {
-  render: (args): JSX.Element => (
+  args: {
+    title: 'Dialog Title',
+    children: <p>This is a dialog content.</p>,
+    isOpen: false,
+    onOpenChange: (): void => {},
+  },
+  render: (): JSX.Element => (
     <DialogWithTrigger
-      {...args}
       title="Dialog Title"
     >
       <p>This is a dialog content.</p>
@@ -95,9 +99,25 @@ export const Default: Story = {
  * Dialog with footer
  */
 export const WithFooter: Story = {
-  render: (args): JSX.Element => (
+  args: {
+    title: 'Confirm Action',
+    children: <p>Are you sure you want to proceed?</p>,
+    footer: (
+      <>
+        <Button variant="secondary">
+          Cancel
+        </Button>
+
+        <Button variant="primary">
+          Confirm
+        </Button>
+      </>
+    ),
+    isOpen: false,
+    onOpenChange: (): void => {},
+  },
+  render: (): JSX.Element => (
     <DialogWithTrigger
-      {...args}
       title="Confirm Action"
       footer={
         <>
@@ -122,6 +142,12 @@ export const WithFooter: Story = {
  * Dialog sizes
  */
 export const Sizes: Story = {
+  args: {
+    isOpen: false,
+    onOpenChange: (): void => {},
+    title: 'Dialog Size Story',
+    children: <p>Dialog size content.</p>,
+  },
   render: (): JSX.Element => (
     <div className="flex flex-wrap gap-4">
       <DialogWithTrigger
@@ -159,9 +185,47 @@ export const Sizes: Story = {
  * Dialog with form
  */
 export const WithForm: Story = {
-  render: (args): JSX.Element => (
+  args: {
+    title: 'Create New Item',
+    children: (
+      <form className="flex flex-col gap-4">
+        <div>
+          <label
+            htmlFor="item-name"
+            className="mb-1 block text-sm font-medium"
+          >
+            Name
+          </label>
+
+          <input
+            id="item-name"
+            type="text"
+            placeholder="Item name"
+            className="w-full rounded-lg border px-3 py-2"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="item-description"
+            className="mb-1 block text-sm font-medium"
+          >
+            Description
+          </label>
+
+          <textarea
+            id="item-description"
+            placeholder="Item description"
+            className="w-full rounded-lg border px-3 py-2"
+          />
+        </div>
+      </form>
+    ),
+    isOpen: false,
+    onOpenChange: (): void => {},
+  },
+  render: (): JSX.Element => (
     <DialogWithTrigger
-      {...args}
       title="Create New Item"
       footer={
         <>
@@ -215,9 +279,20 @@ export const WithForm: Story = {
  * Dialog without close button
  */
 export const NoCloseButton: Story = {
-  render: (args): JSX.Element => (
+  args: {
+    title: 'Important Notice',
+    children: (
+      <p>
+        This dialog cannot be closed by clicking
+        the X button.
+      </p>
+    ),
+    showClose: false,
+    isOpen: false,
+    onOpenChange: (): void => {},
+  },
+  render: (): JSX.Element => (
     <DialogWithTrigger
-      {...args}
       title="Important Notice"
       showClose={false}
       footer={

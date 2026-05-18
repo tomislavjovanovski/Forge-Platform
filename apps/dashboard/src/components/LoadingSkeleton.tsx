@@ -1,4 +1,6 @@
-export function LoadingSkeleton({ rows = 4 }: { rows?: number }): JSX.Element {
+import type { ReactElement } from 'react';
+
+export function LoadingSkeleton({ rows = 4 }: { rows?: number }): ReactElement {
   return (
     <div className="space-y-3">
       {Array.from({ length: rows }).map((_, index) => (

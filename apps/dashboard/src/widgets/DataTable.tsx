@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 interface Column<T> {
   header: string;
@@ -11,7 +11,7 @@ interface DataTableProps<T> {
   data: T[];
 }
 
-export function DataTable<T>({ columns, data }: DataTableProps<T>): JSX.Element {
+export function DataTable<T>({ columns, data }: DataTableProps<T>): ReactElement {
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-xl">
       <table className="min-w-full divide-y divide-slate-800 text-sm">

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactElement } from 'react';
 
 interface CommandPaletteProps {
   onToggleTheme: () => void;
 }
 
-export function CommandPalette({ onToggleTheme }: CommandPaletteProps): JSX.Element {
+export function CommandPalette({ onToggleTheme }: CommandPaletteProps): ReactElement | null {
   const commands = [
     { id: 'c-01', label: 'Open audit log', action: () => window.alert('Navigate to audit log') },
     { id: 'c-02', label: 'View monitoring panel', action: () => window.alert('Navigate to monitoring') },

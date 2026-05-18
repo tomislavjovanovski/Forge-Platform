@@ -29,7 +29,7 @@
     /* Modules */
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "react", "react-dom"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,

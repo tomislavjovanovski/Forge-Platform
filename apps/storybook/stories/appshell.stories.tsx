@@ -2,6 +2,7 @@ import type {
   Meta,
   StoryObj,
   StoryFn,
+  StoryContext,
 } from '@storybook/react';
 
 import { AppShell } from '@forge/ui';
@@ -104,9 +105,7 @@ function SampleContent(): JSX.Element {
 export const Default: Story = {
   args: {
     sidebar: <SampleSidebar />,
-
     header: <SampleHeader />,
-
     children: <SampleContent />,
   },
 };
@@ -155,11 +154,9 @@ export const DarkMode: Story = {
   },
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): JSX.Element => (
+    (story: StoryFn, context: StoryContext): JSX.Element => (
       <div className="dark">
-        <Story />
+        {story(context.args, context)}
       </div>
     ),
   ],

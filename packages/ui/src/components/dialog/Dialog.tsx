@@ -4,12 +4,14 @@
  * Built on portal pattern for proper z-index handling
  */
 
-import React, {
+import {
   forwardRef,
   useEffect,
   useRef,
   useCallback,
   type ReactElement,
+  type MouseEvent,
+  type ReactNode,
 } from 'react';
 
 import { cn } from '../../utils/cn';
@@ -30,17 +32,17 @@ export interface DialogProps {
   /**
    * Dialog title
    */
-  title?: React.ReactNode;
+  title?: ReactNode;
 
   /**
    * Dialog content
    */
-  children: React.ReactNode;
+  children: ReactNode;
 
   /**
    * Dialog footer
    */
-  footer?: React.ReactNode;
+  footer?: ReactNode;
 
   /**
    * Custom content class
@@ -161,7 +163,6 @@ const Dialog = forwardRef<
     // Focus management
     useEffect((): (() => void) | void => {
       if (!isOpen) {
-        // Restore focus when dialog closes
         if (
           previouslyFocusedElement.current
         ) {
@@ -174,11 +175,9 @@ const Dialog = forwardRef<
         return;
       }
 
-      // Save focused element
       previouslyFocusedElement.current =
         document.activeElement as HTMLElement;
 
-      // Disable body scroll
       const originalOverflow =
         document.body.style
           .overflow;
@@ -186,7 +185,6 @@ const Dialog = forwardRef<
       document.body.style.overflow =
         'hidden';
 
-      // Focus first interactive element in dialog
       setTimeout((): void => {
         if (
           contentRef.current
@@ -224,7 +222,7 @@ const Dialog = forwardRef<
     const handleBackdropClick =
       useCallback(
         (
-          event: React.MouseEvent<HTMLDivElement>,
+          event: MouseEvent<HTMLButtonElement>,
         ): void => {
           if (
             closeOnBackdropClick &&
@@ -251,7 +249,9 @@ const Dialog = forwardRef<
           type="button"
           className="fixed inset-0 z-40 bg-black/50 transition-opacity duration-200"
           aria-label="Close dialog"
-          onClick={handleBackdropClick}
+          onClick={
+            handleBackdropClick
+          }
         />
 
         {/* Dialog */}
@@ -277,7 +277,7 @@ const Dialog = forwardRef<
             ref={contentRef}
             className={cn(
               'w-full rounded-lg bg-white shadow-xl dark:bg-slate-900',
-              'flex flex-col max-h-[90vh] overflow-hidden',
+              'flex max-h-[90vh] flex-col overflow-hidden',
               'animate-in fade-in zoom-in-95 slide-in-from-bottom-4 duration-200',
               sizeVariants[size],
               contentClassName,
@@ -311,7 +311,7 @@ const Dialog = forwardRef<
                       )
                     }
                     className={cn(
-                      'flex items-center justify-center h-8 w-8 rounded-lg',
+                      'flex h-8 w-8 items-center justify-center rounded-lg',
                       'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
                       'dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-50',
                       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
@@ -351,7 +351,7 @@ const Dialog = forwardRef<
                 className={cn(
                   'flex items-center justify-end gap-3',
                   'border-t border-slate-200 dark:border-slate-700',
-                  'px-6 py-4 bg-slate-50 dark:bg-slate-800',
+                  'bg-slate-50 px-6 py-4 dark:bg-slate-800',
                 )}
               >
                 {footer}

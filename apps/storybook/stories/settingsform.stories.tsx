@@ -2,6 +2,7 @@ import type {
   Meta,
   StoryObj,
   StoryFn,
+  StoryContext,
 } from '@storybook/react';
 
 import {
@@ -11,8 +12,8 @@ import {
 
 import {
   useState,
+  type ComponentProps,
   type JSX,
-  type ReactNode,
 } from 'react';
 
 const meta: Meta<typeof SettingsForm> = {
@@ -25,18 +26,9 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-type SettingsFormProps = {
-  title?: string;
-  description?: string;
-  fields?: FormField[];
-  submitLabel?: string;
-  showCancel?: boolean;
-  isSubmitting?: boolean;
-  children?: ReactNode;
-  onSubmit?: (
-    data: Record<string, unknown>,
-  ) => Promise<void>;
-};
+type SettingsFormProps = ComponentProps<
+  typeof SettingsForm
+>;
 
 const SAMPLE_FIELDS: FormField[] = [
   {
@@ -184,11 +176,9 @@ export const DarkMode: Story = {
   },
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): JSX.Element => (
+    (story: StoryFn, context: StoryContext): JSX.Element => (
       <div className="dark">
-        <Story />
+        {story(context.args, context)}
       </div>
     ),
   ],
@@ -263,7 +253,7 @@ function InteractiveDemo(
  */
 export const Interactive: Story = {
   render: (
-    args,
+    args: SettingsFormProps,
   ): JSX.Element => (
     <InteractiveDemo {...args} />
   ),

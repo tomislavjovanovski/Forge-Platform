@@ -67,12 +67,16 @@ export function useObservabilityDashboard():
     );
 
   const [viewState, setViewState] =
-    useState<ViewState>('loading');
+    useState<ViewState>(
+      'loading',
+    );
 
   const [
     isRefreshing,
     setIsRefreshing,
-  ] = useState(false);
+  ] = useState<boolean>(
+    false,
+  );
 
   const [socketState, setSocketState] =
     useState<SocketState>(
@@ -89,33 +93,42 @@ export function useObservabilityDashboard():
     lastUpdated,
     setLastUpdated,
   ] = useState<string>(() =>
-    formatTimestamp(new Date()),
+    formatTimestamp(
+      new Date(),
+    ),
   );
 
   const liveTickRef =
     useRef<number>(0);
 
   const reconnectSucceededRef =
-    useRef<boolean>(false);
+    useRef<boolean>(
+      false,
+    );
 
   const markLive =
-    useCallback((): void => {
-      reconnectSucceededRef.current =
-        false;
+    useCallback(
+      (): void => {
+        reconnectSucceededRef.current =
+          false;
 
-      setSocketState('live');
+        setSocketState(
+          'live',
+        );
 
-      setRetryState({
-        attempt: 0,
-        secondsRemaining: 0,
-      });
+        setRetryState({
+          attempt: 0,
+          secondsRemaining: 0,
+        });
 
-      setLastUpdated(
-        formatTimestamp(
-          new Date(),
-        ),
-      );
-    }, []);
+        setLastUpdated(
+          formatTimestamp(
+            new Date(),
+          ),
+        );
+      },
+      [],
+    );
 
   const bootstrap =
     useCallback(
@@ -134,7 +147,9 @@ export function useObservabilityDashboard():
           createDashboardSnapshot(),
         );
 
-        setViewState('ready');
+        setViewState(
+          'ready',
+        );
 
         markLive();
       },
@@ -147,10 +162,12 @@ export function useObservabilityDashboard():
 
   useEffect(() => {
     if (
-      viewState !== 'ready' ||
-      socketState !== 'live'
+      viewState !==
+        'ready' ||
+      socketState !==
+        'live'
     ) {
-      return;
+      return undefined;
     }
 
     const intervalId =
@@ -199,14 +216,17 @@ export function useObservabilityDashboard():
         intervalId,
       );
     };
-  }, [socketState, viewState]);
+  }, [
+    socketState,
+    viewState,
+  ]);
 
   useEffect(() => {
     if (
       socketState !==
       'retrying'
     ) {
-      return;
+      return undefined;
     }
 
     if (
@@ -246,7 +266,7 @@ export function useObservabilityDashboard():
         secondsRemaining: 2,
       });
 
-      return;
+      return undefined;
     }
 
     if (
@@ -270,6 +290,8 @@ export function useObservabilityDashboard():
 
       markLive();
     }
+
+    return undefined;
   }, [
     markLive,
     retryState,
@@ -277,61 +299,75 @@ export function useObservabilityDashboard():
   ]);
 
   const refresh =
-    useCallback((): void => {
-      if (isRefreshing) {
-        return;
-      }
+    useCallback(
+      (): void => {
+        if (
+          isRefreshing
+        ) {
+          return;
+        }
 
-      setIsRefreshing(true);
+        setIsRefreshing(
+          true,
+        );
 
-      setSocketState(
-        'connecting',
-      );
+        setSocketState(
+          'connecting',
+        );
 
-      void (async (): Promise<void> => {
-        await delay(900);
+        void (async (): Promise<void> => {
+          await delay(
+            900,
+          );
+
+          liveTickRef.current = 0;
+
+          setSnapshot(
+            createDashboardSnapshot(),
+          );
+
+          setLastUpdated(
+            formatTimestamp(
+              new Date(),
+            ),
+          );
+
+          setIsRefreshing(
+            false,
+          );
+
+          markLive();
+        })();
+      },
+      [
+        isRefreshing,
+        markLive,
+      ],
+    );
+
+  const reconnectNow =
+    useCallback(
+      (): void => {
+        reconnectSucceededRef.current =
+          true;
 
         liveTickRef.current = 0;
 
         setSnapshot(
-          createDashboardSnapshot(),
+          (
+            current,
+          ): DashboardSnapshot =>
+            advanceDashboardSnapshot(
+              current,
+              current.streamTick +
+                1,
+            ),
         );
-
-        setLastUpdated(
-          formatTimestamp(
-            new Date(),
-          ),
-        );
-
-        setIsRefreshing(false);
 
         markLive();
-      })();
-    }, [
-      isRefreshing,
-      markLive,
-    ]);
-
-  const reconnectNow =
-    useCallback((): void => {
-      reconnectSucceededRef.current =
-        true;
-
-      liveTickRef.current = 0;
-
-      setSnapshot(
-        (
-          current,
-        ): DashboardSnapshot =>
-          advanceDashboardSnapshot(
-            current,
-            current.streamTick +
-              1,
-          ),
-      );
-
-      markLive();
-    }, [markLive]);
+      },
+      [markLive],
+    );
 
   return useMemo(
     (): ObservabilityState => ({
@@ -345,14 +381,14 @@ export function useObservabilityDashboard():
       reconnectNow,
     }),
     [
-      isRefreshing,
-      lastUpdated,
-      reconnectNow,
-      refresh,
-      retryState,
       snapshot,
-      socketState,
       viewState,
+      isRefreshing,
+      socketState,
+      retryState,
+      lastUpdated,
+      refresh,
+      reconnectNow,
     ],
   );
 }

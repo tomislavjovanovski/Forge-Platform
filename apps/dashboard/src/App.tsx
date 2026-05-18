@@ -11,7 +11,7 @@
  * - Feature flag example
  */
 
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import {
   AppShell,
   PageContainer,
@@ -77,7 +77,7 @@ const SETTINGS_FIELDS: FormField[] = [
   },
 ];
 
-export default function App(): JSX.Element {
+export default function App(): ReactElement {
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'settings'>('users');
 

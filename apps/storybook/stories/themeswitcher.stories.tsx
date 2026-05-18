@@ -2,6 +2,7 @@ import type {
   Meta,
   StoryObj,
   StoryFn,
+  StoryContext,
 } from '@storybook/react';
 
 import { ThemeSwitcher } from '@forge/ui';
@@ -53,11 +54,9 @@ export const DarkMode: Story = {
   args: {},
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): JSX.Element => (
+    (story: StoryFn, context: StoryContext): JSX.Element => (
       <div className="dark bg-slate-950 p-8">
-        <Story />
+        {story(context.args, context)}
       </div>
     ),
   ],
@@ -67,9 +66,7 @@ export const WithBackground: Story = {
   args: {},
 
   decorators: [
-    (
-      Story: StoryFn,
-    ): JSX.Element => (
+    (story: StoryFn, context: StoryContext): JSX.Element => (
       <div className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
         <div>
           <p className="mb-4 text-sm text-slate-600 dark:text-slate-400">
@@ -77,7 +74,7 @@ export const WithBackground: Story = {
             in a card:
           </p>
 
-          <Story />
+          {story(context.args, context)}
         </div>
       </div>
     ),
@@ -130,8 +127,9 @@ function InteractiveDemo(
  * Toggle the theme
  */
 export const Interactive: Story = {
+  args: {},
   render: (
-    args,
+    args: ThemeSwitcherProps,
   ): JSX.Element => (
     <InteractiveDemo {...args} />
   ),

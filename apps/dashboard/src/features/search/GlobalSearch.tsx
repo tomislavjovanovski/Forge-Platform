@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ReactElement } from 'react';
 
 const items = [
   { id: 's-01', label: 'Users', path: '/users' },
@@ -8,7 +8,7 @@ const items = [
   { id: 's-05', label: 'Feature flags', path: '/flags' },
 ];
 
-export function GlobalSearch(): JSX.Element {
+export function GlobalSearch(): ReactElement {
   const [query, setQuery] = useState('');
   const results = useMemo(
     () =>

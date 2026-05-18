@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import type { UserProfile } from '../types/dashboard';
@@ -10,7 +10,7 @@ interface ShellProps {
   children: ReactNode;
 }
 
-export function Shell({ user, unreadCount, onOpenNotifications, children }: ShellProps): JSX.Element {
+export function Shell({ user, unreadCount, onOpenNotifications, children }: ShellProps): ReactElement {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <div className="relative mx-auto flex min-h-screen max-w-full overflow-hidden lg:max-w-[1600px]">

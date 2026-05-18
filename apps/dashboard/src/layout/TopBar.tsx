@@ -1,13 +1,14 @@
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { toggleMode } from '../features/theme/themeSlice';
 import { GlobalSearch } from '../features/search/GlobalSearch';
+import type { ReactElement } from 'react';
 
 interface TopBarProps {
   unreadCount: number;
   onOpenNotifications: () => void;
 }
 
-export function TopBar({ unreadCount, onOpenNotifications }: TopBarProps): JSX.Element {
+export function TopBar({ unreadCount, onOpenNotifications }: TopBarProps): ReactElement {
   const dispatch = useAppDispatch();
   const theme = useAppSelector((state) => state.theme.mode);
 

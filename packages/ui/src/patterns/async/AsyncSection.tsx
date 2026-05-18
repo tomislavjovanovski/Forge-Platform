@@ -1,9 +1,10 @@
 /**
  * AsyncSection Pattern
- * Wraps async content with loading, error, and empty states
+ * Wraps async content with loading,
+ * error, and empty states
  */
 
-import React, {
+import {
   forwardRef,
   type ReactElement,
   type ReactNode,
@@ -47,7 +48,8 @@ export interface AsyncSectionProps {
 
 /**
  * AsyncSection Component
- * Handles loading, error, and empty states
+ * Handles loading, error,
+ * and empty states
  * for async content
  */
 export const AsyncSection =
@@ -92,7 +94,7 @@ export const AsyncSection =
 
           {isLoading && (
             <div className="rounded-lg border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-              {loadingContent || (
+              {loadingContent ?? (
                 <div className="flex w-full items-center justify-center py-12">
                   <div className="w-full space-y-4">
                     <div className="h-4 rounded bg-slate-200 dark:bg-slate-800" />
@@ -128,7 +130,7 @@ export const AsyncSection =
             !error &&
             isEmpty && (
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center dark:border-slate-800 dark:bg-slate-900">
-                {emptyContent || (
+                {emptyContent ?? (
                   <p className="text-slate-600 dark:text-slate-400">
                     No content available
                   </p>

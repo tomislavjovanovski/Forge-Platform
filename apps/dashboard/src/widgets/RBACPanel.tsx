@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { permissionMap, permissionNames } from '../features/permissions/permissionUtils';
 import type { UserProfile } from '../types/dashboard';
 
@@ -5,7 +6,7 @@ interface RBACPanelProps {
   user: UserProfile;
 }
 
-export function RBACPanel({ user }: RBACPanelProps): JSX.Element {
+export function RBACPanel({ user }: RBACPanelProps): ReactElement {
   const permissions = permissionMap[user.role] ?? [];
 
   return (

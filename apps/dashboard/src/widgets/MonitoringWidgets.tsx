@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { useGetMetricsQuery } from '../services/dashboardApi';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
 
@@ -7,7 +8,7 @@ const statusStyles = {
   critical: 'bg-rose-500/10 text-rose-300',
 } as const;
 
-export function MonitoringWidgets(): JSX.Element {
+export function MonitoringWidgets(): ReactElement {
   const { data, isLoading } = useGetMetricsQuery();
 
   if (isLoading) {
