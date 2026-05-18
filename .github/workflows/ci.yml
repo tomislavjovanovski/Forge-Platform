@@ -24,12 +24,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -44,17 +48,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
@@ -83,12 +112,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -103,17 +136,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
@@ -148,12 +206,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -168,17 +230,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
@@ -218,12 +305,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -238,17 +329,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
@@ -283,12 +399,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -303,17 +423,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
@@ -341,12 +486,16 @@ jobs:
         run: |
           if command -v tar >/dev/null 2>&1; then
             echo "checkout_method=actions" >> $GITHUB_OUTPUT
+          elif command -v busybox >/dev/null 2>&1 && busybox tar --help >/dev/null 2>&1; then
+            echo "checkout_method=actions" >> $GITHUB_OUTPUT
           elif command -v git >/dev/null 2>&1; then
             echo "checkout_method=git" >> $GITHUB_OUTPUT
+          elif command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+            echo "checkout_method=python" >> $GITHUB_OUTPUT
           elif command -v curl >/dev/null 2>&1 || command -v wget >/dev/null 2>&1; then
             echo "checkout_method=zip" >> $GITHUB_OUTPUT
           else
-            echo "No tar, git, or curl/wget available to checkout repository."
+            echo "No tar, git, python, curl, or wget available to checkout repository."
             exit 1
           fi
       - uses: actions/checkout@v4
@@ -361,17 +510,42 @@ jobs:
           git fetch --depth=1 origin "${{ github.sha }}"
           git checkout FETCH_HEAD
       - name: Fallback checkout with archive
-        if: steps.checkout-method.outputs.checkout_method == 'zip'
+        if: steps.checkout-method.outputs.checkout_method == 'python' || steps.checkout-method.outputs.checkout_method == 'zip'
         run: |
           rm -rf *
           ARCHIVE_URL="https://api.github.com/repos/${{ github.repository }}/zipball/${{ github.sha }}"
-          if command -v curl >/dev/null 2>&1; then
+          if command -v python3 >/dev/null 2>&1; then
+            PYTHON=python3
+          elif command -v python >/dev/null 2>&1; then
+            PYTHON=python
+          fi
+          if [ -n "$PYTHON" ]; then
+            $PYTHON - <<'PY'
+          import os, urllib.request, zipfile
+          repo = os.environ['GITHUB_REPOSITORY']
+          sha = os.environ['GITHUB_SHA']
+          token = os.environ['GITHUB_TOKEN']
+          url = f"https://api.github.com/repos/{repo}/zipball/{sha}"
+          req = urllib.request.Request(url, headers={
+              'Authorization': f'Bearer {token}',
+              'Accept': 'application/vnd.github.v3+json',
+          })
+          with urllib.request.urlopen(req) as r:
+              data = r.read()
+          with open('repo.zip', 'wb') as f:
+              f.write(data)
+          with zipfile.ZipFile('repo.zip') as z:
+              z.extractall('repo')
+            PY
+          elif command -v curl >/dev/null 2>&1; then
             curl -L -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "$ARCHIVE_URL" -o repo.zip
           else
             wget --header="Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -O repo.zip "$ARCHIVE_URL"
           fi
           if command -v unzip >/dev/null 2>&1; then
             unzip repo.zip -d repo
+          elif [ -n "$PYTHON" ]; then
+            true
           else
             python3 -m zipfile -e repo.zip repo
           fi
