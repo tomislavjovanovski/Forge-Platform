@@ -19,6 +19,20 @@ jobs:
           echo "PATH=$PATH"
           which tar || true
           tar --version || true
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -35,6 +49,20 @@ jobs:
     needs: [lint]
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -57,6 +85,20 @@ jobs:
       matrix:
         app: [dashboard, playground]
     steps:
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -84,6 +126,20 @@ jobs:
             port: 4174
         browser: [chromium, firefox, webkit]
     steps:
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -106,6 +162,20 @@ jobs:
     needs: [unit-tests]
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
@@ -121,6 +191,20 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     steps:
+      - name: Ensure tar is installed
+        if: runner.os == 'Linux'
+        run: |
+          if ! command -v tar >/dev/null 2>&1; then
+            if command -v apt-get >/dev/null 2>&1; then
+              sudo apt-get update
+              sudo apt-get install -y tar
+            elif command -v apk >/dev/null 2>&1; then
+              sudo apk add --no-cache tar
+            else
+              echo "No supported package manager found to install tar."
+              exit 1
+            fi
+          fi
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v2
         with:
