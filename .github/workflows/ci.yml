@@ -16,7 +16,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -26,12 +26,14 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm lint
+      - name: Lint
+        run: pnpm lint
 
-      - run: pnpm type-check
+      - name: Type Check
+        run: pnpm type-check
 
   unit-tests:
-    needs: [lint]
+    needs: lint
     runs-on: ubuntu-latest
 
     steps:
@@ -39,7 +41,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -49,10 +51,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm test:coverage
+      - name: Run Unit Tests with Coverage
+        run: pnpm test:coverage
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v3
         with:
           files: |
             ./apps/**/coverage/coverage-final.json
@@ -60,7 +63,7 @@ jobs:
           fail_ci_if_error: true
 
   build:
-    needs: [unit-tests]
+    needs: unit-tests
     runs-on: ubuntu-latest
 
     strategy:
@@ -72,7 +75,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -82,18 +85,22 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
+      - name: Build ${{ matrix.app }}
+        run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.app }}
           path: apps/${{ matrix.app }}/dist
 
   e2e:
-    needs: [build]
+    needs: build
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
+
       matrix:
         include:
           - app: dashboard
@@ -109,7 +116,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -119,11 +126,13 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
+      - name: Build App
+        run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
 
-      - run: npx playwright install --with-deps
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
 
-      - name: Start preview server
+      - name: Start Preview Server
         run: |
           pnpm --dir ./apps/${{ matrix.app }} exec vite preview \
             --host 127.0.0.1 \
@@ -132,21 +141,22 @@ jobs:
 
           sleep 10
 
-      - name: Run Playwright tests
+      - name: Run Playwright Tests
         run: |
           PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
           pnpm exec playwright test apps/${{ matrix.app }}/tests \
             --project=${{ matrix.browser }} \
             --reporter=html
 
-      - uses: actions/upload-artifact@v4
+      - name: Upload Playwright Report
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.app }}-${{ matrix.browser }}
           path: playwright-report
 
   accessibility:
-    needs: [unit-tests]
+    needs: unit-tests
     runs-on: ubuntu-latest
 
     steps:
@@ -154,7 +164,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -164,10 +174,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm test:accessibility
+      - name: Run Accessibility Tests
+        run: pnpm test:accessibility
 
   lighthouse:
-    needs: [build]
+    needs: build
     runs-on: ubuntu-latest
 
     steps:
@@ -175,7 +186,7 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 9.0.0
+          version: 9
 
       - uses: actions/setup-node@v4
         with:
@@ -185,9 +196,10 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm turbo run build --filter=@forge/dashboard
+      - name: Build Dashboard
+        run: pnpm turbo run build --filter=@forge/dashboard
 
-      - name: Start dashboard preview
+      - name: Start Dashboard Preview
         run: |
           pnpm --dir ./apps/dashboard exec vite preview \
             --host 127.0.0.1 \
