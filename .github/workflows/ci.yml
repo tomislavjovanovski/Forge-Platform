@@ -128,15 +128,6 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      - name: Start Preview Server
-        run: |
-          pnpm --dir ./apps/${{ matrix.app }} exec vite preview \
-            --host 127.0.0.1 \
-            --port ${{ matrix.port }} \
-            --strictPort &
-
-          sleep 10
-
       - name: Run Playwright Tests
         run: |
           PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
