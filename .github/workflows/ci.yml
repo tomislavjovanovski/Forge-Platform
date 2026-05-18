@@ -22,6 +22,7 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
@@ -44,14 +45,18 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm test:coverage
 
-      - uses: codecov/codecov-action@v3
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          files: ./coverage/coverage-final.json
+          files: |
+            ./apps/**/coverage/coverage-final.json
+            ./packages/**/coverage/coverage-final.json
           fail_ci_if_error: true
 
   build:
@@ -73,12 +78,13 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm build --filter=@forge/${{ matrix.app }}
+      - run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.app }}
           path: apps/${{ matrix.app }}/dist
@@ -109,16 +115,32 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
+
       - run: npx playwright install --with-deps
 
-      - run: |
-          PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
-          pnpm exec playwright test apps/${{ matrix.app }}/tests --project=${{ matrix.browser }} --reporter=html
+      - name: Start preview server
+        run: |
+          pnpm --dir ./apps/${{ matrix.app }} exec vite preview \
+            --host 127.0.0.1 \
+            --port ${{ matrix.port }} \
+            --strictPort &
 
-      - uses: actions/upload-artifact@v3
+          sleep 10
+
+      - name: Run Playwright tests
+        run: |
+          PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
+          pnpm exec playwright test apps/${{ matrix.app }}/tests \
+            --project=${{ matrix.browser }} \
+            --reporter=html
+
+      - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: playwright-report-${{ matrix.app }}-${{ matrix.browser }}
           path: playwright-report
@@ -138,6 +160,7 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
@@ -158,12 +181,20 @@ jobs:
         with:
           node-version: 20
           cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm build --filter=@forge/dashboard
+      - run: pnpm turbo run build --filter=@forge/dashboard
 
-      - run: |
-          pnpm --dir ./apps/dashboard exec vite preview --host 127.0.0.1 --port 4173 --strictPort &
-          sleep 8
-          pnpm exec lhci autorun --config .lighthouserc.json
+      - name: Start dashboard preview
+        run: |
+          pnpm --dir ./apps/dashboard exec vite preview \
+            --host 127.0.0.1 \
+            --port 4173 \
+            --strictPort &
+
+          sleep 10
+
+      - name: Run Lighthouse CI
+        run: pnpm exec lhci autorun --config .lighthouserc.json
