@@ -14,12 +14,6 @@ Forge Platform is:
 - ✅ A **testing and QA showcase** with Playwright, accessibility testing, and MSW
 - ✅ **Architecture-first**: Reusable patterns > business logic
 
-Forge Platform is NOT:
-
-- ❌ A fake SaaS product or enterprise application
-- ❌ Full of RBAC, audit logs, notification centers
-- ❌ Heavy on domain-specific business logic
-- ❌ CRM-style screens or complex workflows
 
 ## Architecture Overview
 
