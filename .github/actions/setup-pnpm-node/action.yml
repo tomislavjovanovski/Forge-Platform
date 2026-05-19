@@ -1,0 +1,44 @@
+name: Set up pnpm and Node for the repo
+
+description: >
+  Checkout the repository, install pnpm, setup Node, and optionally install dependencies.
+
+inputs:
+  node-version:
+    description: Node.js version to install.
+    required: false
+    default: '20'
+  pnpm-version:
+    description: pnpm version to install.
+    required: false
+    default: '9'
+  cache-dependency-path:
+    description: Path to the lockfile used for cache keys.
+    required: false
+    default: 'pnpm-lock.yaml'
+  install:
+    description: Whether to install npm dependencies.
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: pnpm
+        cache-dependency-path: ${{ inputs.cache-dependency-path }}
+
+    - name: Install dependencies
+      if: ${{ inputs.install == 'true' }}
+      run: pnpm install --frozen-lockfile

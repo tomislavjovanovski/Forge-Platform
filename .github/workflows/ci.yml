@@ -12,77 +12,93 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - &checkout-setup
+        uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v2
+      - &pnpm-setup
+        uses: pnpm/action-setup@v2
         with:
           version: 9
 
-      - uses: actions/setup-node@v4
+      - &node-setup
+        uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: pnpm
           cache-dependency-path: pnpm-lock.yaml
 
-      - name: Install Dependencies
+      - &pnpm-cache
+        name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - &install-deps
+        name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Lint
         run: pnpm lint
 
-      - name: Type Check
-        run: pnpm type-check
-
-  unit-tests:
+  typecheck:
     needs: lint
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
+      - name: Type Check
+        run: pnpm typecheck
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
+  security-scan:
+    needs: lint
+    runs-on: ubuntu-latest
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+    steps:
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
+      - name: Security Scan
+        run: pnpm audit --audit-level=moderate
 
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+  unit-tests:
+    needs: [lint, typecheck]
+    runs-on: ubuntu-latest
 
+    steps:
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
       - name: Run Unit Tests with Coverage
         run: pnpm test:coverage
 
   build:
-    needs: unit-tests
+    needs: [unit-tests, typecheck]
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: true
       matrix:
         app: [dashboard, playground]
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
       - name: Build ${{ matrix.app }}
         run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
-
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -90,51 +106,36 @@ jobs:
           path: apps/${{ matrix.app }}/dist
 
   e2e:
-    needs: build
+    needs: [build, security-scan]
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
-
       matrix:
         include:
           - app: dashboard
             port: 4173
-
           - app: playground
             port: 4174
-
         browser: [chromium, firefox, webkit]
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
       - name: Build App
         run: pnpm turbo run build --filter=@forge/${{ matrix.app }}
-
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
-
       - name: Run Playwright Tests
         run: |
           PW_APP=${{ matrix.app }} PW_PORT=${{ matrix.port }} \
           pnpm exec playwright test apps/${{ matrix.app }}/tests \
             --project=${{ matrix.browser }} \
+            --retries=2 \
             --reporter=html
-
       - name: Upload Playwright Report
         if: always()
         uses: actions/upload-artifact@v4
@@ -143,51 +144,30 @@ jobs:
           path: playwright-report
 
   accessibility:
-    needs: unit-tests
+    needs: [unit-tests, typecheck]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
       - name: Run Accessibility Tests
         run: pnpm test:accessibility
 
   lighthouse:
-    needs: build
+    needs: [build, security-scan]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 9
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
-
+      - *checkout-setup
+      - *pnpm-setup
+      - *node-setup
+      - *pnpm-cache
+      - *install-deps
       - name: Build Dashboard
         run: pnpm turbo run build --filter=@forge/dashboard
-
       - name: Start Dashboard Preview
         run: |
           pnpm --dir ./apps/dashboard exec vite preview \
@@ -196,6 +176,5 @@ jobs:
             --strictPort &
 
           sleep 10
-
       - name: Run Lighthouse CI
         run: pnpm exec lhci autorun --config .lighthouserc.json
