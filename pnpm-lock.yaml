@@ -322,7 +322,7 @@ importers:
         version: 1.6.1(@types/node@20.19.41)(@vitest/ui@1.6.1)(jsdom@23.2.0)
 
   packages/eslint-config:
-    dependencies:
+    devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.13.0
         version: 6.21.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
@@ -344,7 +344,6 @@ importers:
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.2(eslint@8.57.1)
-    devDependencies:
       typescript:
         specifier: ^5.3.3
         version: 5.9.3
