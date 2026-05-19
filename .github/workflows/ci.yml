@@ -54,7 +54,7 @@ jobs:
       - *pnpm-cache
       - *install-deps
       - name: Type Check
-        run: pnpm typecheck
+        run: pnpm type-check
 
   security-scan:
     needs: lint
