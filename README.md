@@ -237,9 +237,10 @@ lint
  ├── typecheck
  ├── security-scan
  └── unit-tests
-       ├── build (matrix)
+       ├── build (dashboard/playground matrix)
        ├── accessibility
-       └── e2e (chromium/firefox/webkit)
+       ├── lighthouse
+       └── e2e (chromium/firefox/webkit matrix)
 ```
 
 ---
