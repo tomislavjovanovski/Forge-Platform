@@ -4,6 +4,9 @@ A **frontend platform engineering system** with reusable UI patterns and QA infr
 
 Instead of being a complex enterprise application, forge-platform is a **pattern library and architecture showcase** demonstrating modern frontend engineering practices.
 
+![Forge-Platform](docs/product-shot_forgeplatform.png)
+
+
 ## What Is Forge Platform?
 
 Forge Platform is:
